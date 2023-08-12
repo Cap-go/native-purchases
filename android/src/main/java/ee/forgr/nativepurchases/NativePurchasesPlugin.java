@@ -115,17 +115,82 @@ public class NativePurchasesPlugin extends Plugin {
 
   @PluginMethod
   public void restorePurchases(PluginCall call) {
-    Log.i("NativePurchases", "restorePurchases");
-    call.resolve();
+      Log.d("NativePurchases", "restorePurchases");
+
+      if (billingClient.isReady()) {
+          Purchase.PurchasesResult purchasesResult = billingClient.queryPurchases(BillingClient.SkuType.INAPP);
+
+          if (purchasesResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+              List<Purchase> purchasesList = purchasesResult.getPurchasesList();
+
+              JSObject ret = new JSObject();
+              JSONArray purchases = new JSONArray();
+
+              for (Purchase purchase : purchasesList) {
+                  JSObject purchaseObject = new JSObject();
+                  purchaseObject.put("productId", purchase.getSku());
+                  purchaseObject.put("transactionId", purchase.getPurchaseToken());
+                  purchaseObject.put("purchaseTime", purchase.getPurchaseTime());
+                  purchases.put(purchaseObject);
+              }
+
+              ret.put("purchases", purchases);
+              call.resolve(ret);
+          } else {
+              // Handle any other error codes.
+              call.reject("Unknown error")
+          }
+      }
   }
 
-  @PluginMethod
-  public void getProducts(PluginCall call) {
-    List<String> productIdentifiers = new ArrayList<String>();
+
+@PluginMethod
+public void getProducts(PluginCall call) {
     JSONArray productIdentifiersArray = call.getArray("productIdentifiers");
-    Log.i("NativePurchases", "getProducts: " + productIdentifiersArray);
-    call.resolve();
-  }
+    List<String> productIdentifiers = new ArrayList<>();
+
+    for (int i = 0; i < productIdentifiersArray.length(); i++) {
+        try {
+            productIdentifiers.add(productIdentifiersArray.getString(i));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    Log.d("NativePurchases", "getProducts: " + productIdentifiers);
+
+    if (billingClient.isReady()) {
+        SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
+        params.setSkusList(productIdentifiers).setType(BillingClient.SkuType.INAPP);
+
+        billingClient.querySkuDetailsAsync(params.build(), new SkuDetailsResponseListener() {
+            @Override
+            public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> skuDetailsList) {
+                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && skuDetailsList != null) {
+                    JSObject ret = new JSObject();
+                    JSONArray products = new JSONArray();
+
+                    for (SkuDetails skuDetails : skuDetailsList) {
+                        JSObject product = new JSObject();
+                        product.put("productId", skuDetails.getSku());
+                        product.put("title", skuDetails.getTitle());
+                        product.put("description", skuDetails.getDescription());
+                        product.put("price", skuDetails.getPrice());
+                        product.put("priceAmountMicros", skuDetails.getPriceAmountMicros());
+                        product.put("priceCurrencyCode", skuDetails.getPriceCurrencyCode());
+                        product.put("type", skuDetails.getType());
+                        products.put(product);
+                    }
+
+                    ret.put("products", products);
+                    call.resolve(ret);
+                } else {
+                    // Handle any other error codes.
+                }
+            }
+        });
+    }
+}
 
   //================================================================================
   // Private methods
