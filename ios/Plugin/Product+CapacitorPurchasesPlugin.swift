@@ -1,0 +1,52 @@
+//
+//  Extensions.swift
+//  CapgoCapacitorPurchases
+//
+//  Created by Martin DONADIEU on 2023-08-08.
+//
+
+import Foundation
+import StoreKit
+
+@available(iOS 15.0, *)
+extension Product {
+    
+    var dictionary: [String: Any] {
+//        /**
+//         * Currency code for price and original price.
+//         */
+//        readonly currencyCode: string;
+//        /**
+//         * Currency symbol for price and original price.
+//         */
+//        readonly currencySymbol: string;
+//        /**
+//         * Boolean indicating if the product is sharable with family
+//         */
+//        readonly isFamilyShareable: boolean;
+//        /**
+//         * Group identifier for the product.
+//         */
+//        readonly subscriptionGroupIdentifier: string;
+//        /**
+//         * The Product subcription group identifier.
+//         */
+//        readonly subscriptionPeriod: SubscriptionPeriod;
+//        /**
+//         * The Product introductory Price.
+//         */
+//        readonly introductoryPrice: SKProductDiscount | null;
+//        /**
+//         * The Product discounts list.
+//         */
+//        readonly discounts: SKProductDiscount[];
+        return [
+            "identifier": self.id,
+            "description": self.description,
+            "title": self.displayName,
+            "price": self.price,
+            "priceString": self.displayPrice,
+            "isFamilyShareable": self.isFamilyShareable,
+        ]
+    }
+}
