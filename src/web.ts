@@ -1,10 +1,38 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { NativePurchasesPlugin } from './definitions';
+import type { 
+  NativePurchasesPlugin,
+  CustomerInfo,
+  Product,
+} from './definitions';
+
+
+export const mockCustomerInfo: CustomerInfo = {
+  activeSubscriptions: [""],
+  allPurchasedProductIdentifiers: [""],
+  nonSubscriptionTransactions: [],
+  latestExpirationDate: null,
+  firstSeen: "2020-01-01T00:00:00.000Z",
+  originalAppUserId: "",
+  requestDate: "2020-01-01T00:00:00.000Z",
+  originalApplicationVersion: "",
+  originalPurchaseDate: null,
+  managementURL: null,
+};
 
 export class NativePurchasesWeb extends WebPlugin implements NativePurchasesPlugin {
-  async echo(options: { value: string }): Promise<{ value: string }> {
-    console.log('ECHO', options);
-    return options;
+  async restorePurchases(): Promise<{ customerInfo: CustomerInfo }> {
+    console.error("purchasePackage only mocked in web");
+    return { customerInfo: mockCustomerInfo };
+  }
+
+  async getProducts(options: { productIdentifiers: string[]; }): Promise<{ products: Product[]; }> {
+    console.error("getProducts only mocked in web " + options);
+    return { products: [] };
+  }
+
+  async purchaseProduct(options: { productIdentifier: string; quantity: number; }): Promise<{ customerInfo: CustomerInfo; }> {
+    console.error("purchaseProduct only mocked in web" + options);
+    return { customerInfo: mockCustomerInfo };
   }
 }
