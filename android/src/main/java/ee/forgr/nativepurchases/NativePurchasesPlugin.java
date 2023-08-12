@@ -2,6 +2,17 @@ package ee.forgr.nativepurchases;
 
 import android.util.Log;
 import androidx.annotation.NonNull;
+
+import com.android.billingclient.api.AcknowledgePurchaseParams;
+import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
+import com.android.billingclient.api.BillingClient;
+import com.android.billingclient.api.BillingFlowParams;
+import com.android.billingclient.api.BillingResult;
+import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.PurchasesUpdatedListener;
+import com.android.billingclient.api.SkuDetails;
+import com.android.billingclient.api.SkuDetailsParams;
+import com.android.billingclient.api.SkuDetailsResponseListener;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -22,6 +33,86 @@ public class NativePurchasesPlugin extends Plugin {
 
   public final String PLUGIN_VERSION = "2.0.13";
 
+  private BillingClient billingClient;
+  private PluginCall purchaseCall;
+
+  @Override
+  public void load() {
+    super.load();
+      billingClient = BillingClient.newBuilder(getContext())
+          .setListener(new PurchasesUpdatedListener() {
+              @Override
+              public void onPurchasesUpdated(BillingResult billingResult, List<Purchase> purchases) {
+                  if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && purchases != null) {
+                      for (Purchase purchase : purchases) {
+                          handlePurchase(purchase);
+                      }
+                  } else {
+                      // Handle any other error codes.
+                  }
+              }
+          })
+          .enablePendingPurchases()
+          .build();
+  }
+
+  private void handlePurchase(Purchase purchase) {
+      if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
+          // Grant entitlement to the user, then acknowledge the purchase
+          acknowledgePurchase(purchase.getPurchaseToken());
+
+          JSObject ret = new JSObject();
+          ret.put("transactionId", purchase.getPurchaseToken());
+          purchaseCall.resolve(ret);
+      } else if (purchase.getPurchaseState() == Purchase.PurchaseState.PENDING) {
+          // Here you can confirm to the user that they've started the pending
+          // purchase, and to complete it, they should follow instructions that are
+          // given to them. You can also choose to remind the user to complete the
+          // purchase if you detect that it is still pending.
+      }
+  }
+
+  private void acknowledgePurchase(String purchaseToken) {
+      AcknowledgePurchaseParams acknowledgePurchaseParams =
+          AcknowledgePurchaseParams.newBuilder()
+              .setPurchaseToken(purchaseToken)
+              .build();
+      billingClient.acknowledgePurchase(acknowledgePurchaseParams, new AcknowledgePurchaseResponseListener() {
+          @Override
+          public void onAcknowledgePurchaseResponse(BillingResult billingResult) {
+              // Handle the result of the acknowledge purchase
+          }
+      });
+  }
+
+  @PluginMethod
+  public void purchaseProduct(PluginCall call) {
+      String productIdentifier = call.getString("productIdentifier");
+      Log.d("CapacitorPurchases", "purchaseProduct: " + productIdentifier);
+      purchaseCall = call;
+
+      if (billingClient.isReady()) {
+          List<String> skuList = new ArrayList<>();
+          skuList.add(productIdentifier);
+          SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
+          params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP);
+
+          billingClient.querySkuDetailsAsync(params.build(), new SkuDetailsResponseListener() {
+              @Override
+              public void onSkuDetailsResponse(BillingResult billingResult, List<SkuDetails> skuDetailsList) {
+                  if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && skuDetailsList != null) {
+                      for (SkuDetails skuDetails : skuDetailsList) {
+                          BillingFlowParams flowParams = BillingFlowParams.newBuilder()
+                                  .setSkuDetails(skuDetails)
+                                  .build();
+                          billingClient.launchBillingFlow(getActivity(), flowParams);
+                      }
+                  }
+              }
+          });
+      }
+  }
+
   @PluginMethod
   public void restorePurchases(PluginCall call) {
     Log.i("NativePurchases", "restorePurchases");
@@ -33,13 +124,6 @@ public class NativePurchasesPlugin extends Plugin {
     List<String> productIdentifiers = new ArrayList<String>();
     JSONArray productIdentifiersArray = call.getArray("productIdentifiers");
     Log.i("NativePurchases", "getProducts: " + productIdentifiersArray);
-    call.resolve();
-  }
-
-  @PluginMethod
-  public void purchaseProduct(PluginCall call) {
-    String productIdentifier = call.getString("productIdentifier");
-    Log.i("NativePurchases", "purchaseProduct: " + productIdentifier);
     call.resolve();
   }
 

@@ -31,7 +31,7 @@ public class NativePurchasesPlugin: CAPPlugin {
                     case let .success(.verified(transaction)):
                         // Successful purhcase
                         await transaction.finish()
-                        call.resolve(["id": transaction.id])
+                        call.resolve(["transactionId": transaction.id])
                         break
                     case let .success(.unverified(_, error)):
                         // Successful purchase but transaction/receipt can't be verified
