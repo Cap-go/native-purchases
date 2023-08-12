@@ -138,7 +138,7 @@ public class NativePurchasesPlugin extends Plugin {
               call.resolve(ret);
           } else {
               // Handle any other error codes.
-              call.reject("Unknown error")
+              call.reject("Unknown error");
           }
       }
   }

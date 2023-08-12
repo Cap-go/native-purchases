@@ -1,6 +1,6 @@
 {
   "name": "@capgo/native-purchases",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "In-app Subscriptions Made Easy",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -11,7 +11,7 @@
     "android/build.gradle",
     "dist/",
     "ios/Plugin/",
-    "NativePurchases.podspec"
+    "CapgoNativePurchases.podspec"
   ],
   "author": "Martin donadieu",
   "license": "MIT",
