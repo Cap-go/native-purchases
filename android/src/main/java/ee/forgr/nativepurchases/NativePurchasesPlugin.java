@@ -117,30 +117,30 @@ public class NativePurchasesPlugin extends Plugin {
   public void restorePurchases(PluginCall call) {
       Log.d("NativePurchases", "restorePurchases");
 
-      if (billingClient.isReady()) {
-          Purchase.PurchasesResult purchasesResult = billingClient.queryPurchases(BillingClient.SkuType.INAPP);
+      // if (billingClient.isReady()) {
+      //     Purchase.PurchasesResult purchasesResult = billingClient.queryPurchases(BillingClient.SkuType.INAPP);
 
-          if (purchasesResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-              List<Purchase> purchasesList = purchasesResult.getPurchasesList();
+      //     if (purchasesResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+      //         List<Purchase> purchasesList = purchasesResult.getPurchasesList();
 
-              JSObject ret = new JSObject();
-              JSONArray purchases = new JSONArray();
+      //         JSObject ret = new JSObject();
+      //         JSONArray purchases = new JSONArray();
 
-              for (Purchase purchase : purchasesList) {
-                  JSObject purchaseObject = new JSObject();
-                  purchaseObject.put("productId", purchase.getSku());
-                  purchaseObject.put("transactionId", purchase.getPurchaseToken());
-                  purchaseObject.put("purchaseTime", purchase.getPurchaseTime());
-                  purchases.put(purchaseObject);
-              }
+      //         for (Purchase purchase : purchasesList) {
+      //             JSObject purchaseObject = new JSObject();
+      //             purchaseObject.put("productId", purchase.getSku());
+      //             purchaseObject.put("transactionId", purchase.getPurchaseToken());
+      //             purchaseObject.put("purchaseTime", purchase.getPurchaseTime());
+      //             purchases.put(purchaseObject);
+      //         }
 
-              ret.put("purchases", purchases);
-              call.resolve(ret);
-          } else {
-              // Handle any other error codes.
-              call.reject("Unknown error");
-          }
-      }
+      //         ret.put("purchases", purchases);
+      //         call.resolve(ret);
+      //     } else {
+      //         // Handle any other error codes.
+      //         call.reject("Unknown error");
+      //     }
+      // }
   }
 
 
