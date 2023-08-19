@@ -11,7 +11,7 @@ public class NativePurchasesPlugin: CAPPlugin {
 
     private let PLUGIN_VERSION = "2.0.13"
 
-    @objc func purchaseProduct(_ call: CAPPluginCall) async {
+    @objc func purchaseProduct(_ call: CAPPluginCall) {
         if #available(iOS 15, *) {
             print("purchaseProduct")
             let productIdentifier = call.getString("productIdentifier", "")
@@ -20,57 +20,57 @@ public class NativePurchasesPlugin: CAPPlugin {
                 call.reject("productIdentifier is Empty, give an id")
                 return
             }
-            do {
-                let products = try await Product.products(for: [productIdentifier])
-                let product = products[0]
-                var purchaseOptions = Set<Product.PurchaseOption>()
-                purchaseOptions.insert(Product.PurchaseOption.quantity(quantity))
-                let result = try await product.purchase(options: purchaseOptions)
-                print("purchaseProduct result \(result)")
-                switch result {
-                    case let .success(.verified(transaction)):
-                        // Successful purhcase
-                        await transaction.finish()
-                        call.resolve(["transactionId": transaction.id])
-                        break
-                    case let .success(.unverified(_, error)):
-                        // Successful purchase but transaction/receipt can't be verified
-                        // Could be a jailbroken phone
-                        call.reject(error.localizedDescription)
-                        break
-                    case .pending:
-                        // Transaction waiting on SCA (Strong Customer Authentication) or
-                        // approval from Ask to Buy
-                        call.reject("Transaction pending")
-                        break
-                    case .userCancelled:
-                        // ^^^
-                        call.reject("User cancelled")
-                        break
-                    @unknown default:
-                        call.reject("Unknown error")
-                        break
+            
+            Task {
+                do {
+                    let products = try await Product.products(for: [productIdentifier])
+                    let product = products[0]
+                    var purchaseOptions = Set<Product.PurchaseOption>()
+                    purchaseOptions.insert(Product.PurchaseOption.quantity(quantity))
+                    let result = try await product.purchase(options: purchaseOptions)
+                    print("purchaseProduct result \(result)")
+                    switch result {
+                        case let .success(.verified(transaction)):
+                            // Successful purhcase
+                            await transaction.finish()
+                            call.resolve(["transactionId": transaction.id])
+                        case let .success(.unverified(_, error)):
+                            // Successful purchase but transaction/receipt can't be verified
+                            // Could be a jailbroken phone
+                            call.reject(error.localizedDescription)
+                        case .pending:
+                            // Transaction waiting on SCA (Strong Customer Authentication) or
+                            // approval from Ask to Buy
+                            call.reject("Transaction pending")
+                        case .userCancelled:
+                            // ^^^
+                            call.reject("User cancelled")
+                        @unknown default:
+                            call.reject("Unknown error")
+                    }
+                } catch {
+                    print(error)
+                    call.reject(error.localizedDescription)
                 }
-            } catch {
-                print(error)
-                call.reject(error.localizedDescription)
             }
         } else {
             print("Not implemented under ios 15")
             call.reject("Not implemented under ios 15")
-            return
         }
     }
 
-    @objc func restorePurchases(_ call: CAPPluginCall) async {
+    @objc func restorePurchases(_ call: CAPPluginCall) {
         if #available(iOS 15.0, *) {
             print("restorePurchases")
-            do {
-                try await AppStore.sync()
-                call.resolve()
-            } catch {
-                print(error)
-                call.reject(error.localizedDescription)
+            DispatchQueue.global().async {
+                Task {
+                    do {
+                        try await AppStore.sync()
+                        call.resolve()
+                    } catch {
+                        call.reject(error.localizedDescription)
+                    }
+                }
             }
         } else {
             print("Not implemented under ios 15")
@@ -78,25 +78,29 @@ public class NativePurchasesPlugin: CAPPlugin {
         }
     }
 
-    @objc func getProducts(_ call: CAPPluginCall) async {
+    @objc func getProducts(_ call: CAPPluginCall) {
         if #available(iOS 15.0, *) {
             let productIdentifiers = call.getArray("productIdentifiers", String.self) ?? []
-            do {
-                let products = try await Product.products(for: productIdentifiers)
-                let productsJson = products.map { (product) -> [String: Any] in
-                    return product.dictionary
+            DispatchQueue.global().async {
+                Task {
+                    do {
+                        let products = try await Product.products(for: productIdentifiers)
+                        var productsJson: [[String: Any]] = products.map { $0.dictionary }
+                        call.resolve([
+                            "products": productsJson
+                        ])
+                    } catch {
+                        print(error)
+                        call.reject(error.localizedDescription)
+                    }
                 }
-                call.resolve([
-                    "products": productsJson
-                ])
-            } catch {
-                print(error)
-                call.reject(error.localizedDescription)
             }
         } else {
             print("Not implemented under ios 15")
             call.reject("Not implemented under ios 15")
         }
     }
+
+
 
 }
