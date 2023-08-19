@@ -85,7 +85,7 @@ public class NativePurchasesPlugin: CAPPlugin {
                 Task {
                     do {
                         let products = try await Product.products(for: productIdentifiers)
-                        var productsJson: [[String: Any]] = products.map { $0.dictionary }
+                        let productsJson: [[String: Any]] = products.map { $0.dictionary }
                         call.resolve([
                             "products": productsJson
                         ])
