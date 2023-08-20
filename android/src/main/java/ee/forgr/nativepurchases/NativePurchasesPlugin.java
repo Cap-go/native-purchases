@@ -147,6 +147,7 @@ public class NativePurchasesPlugin extends Plugin {
   @PluginMethod
   public void purchaseProduct(PluginCall call) {
     String productIdentifier = call.getString("productIdentifier");
+    String productType = call.getString("productType", "inapp");
     // cannot use quantity, because it's done in native modal
     Log.d("CapacitorPurchases", "purchaseProduct: " + productIdentifier);
     if (productIdentifier.isEmpty()) {
@@ -158,7 +159,11 @@ public class NativePurchasesPlugin extends Plugin {
       QueryProductDetailsParams.Product
         .newBuilder()
         .setProductId(productIdentifier)
-        .setProductType(BillingClient.ProductType.INAPP)
+        .setProductType(
+          productType == "inapp"
+            ? BillingClient.ProductType.INAPP
+            : BillingClient.ProductType.SUBS
+        )
         .build()
     );
     QueryProductDetailsParams params = QueryProductDetailsParams
@@ -215,6 +220,7 @@ public class NativePurchasesPlugin extends Plugin {
   @PluginMethod
   public void getProducts(PluginCall call) {
     JSONArray productIdentifiersArray = call.getArray("productIdentifiers");
+    String productType = call.getString("productType", "inapp");
     List<String> productIdentifiers = new ArrayList<>();
 
     for (int i = 0; i < productIdentifiersArray.length(); i++) {
@@ -232,7 +238,11 @@ public class NativePurchasesPlugin extends Plugin {
         QueryProductDetailsParams.Product
           .newBuilder()
           .setProductId(productIdentifier)
-          .setProductType(BillingClient.ProductType.INAPP)
+          .setProductType(
+            productType == "inapp"
+              ? BillingClient.ProductType.INAPP
+              : BillingClient.ProductType.SUBS
+          )
           .build()
       );
     }

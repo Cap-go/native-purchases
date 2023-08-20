@@ -314,12 +314,30 @@ export interface NativePurchasesPlugin {
    */
   restorePurchases(): Promise<{ customerInfo: CustomerInfo }>;
 
+  /**
+   * Started purchase process for the given product.
+   *
+   * @param options - The product to purchase
+   * @param options.productIdentifier - The product identifier of the product you want to purchase.
+   * @param options.productType - Only Android, the type of product, can be inapp or subs. Will use inapp by default.
+   * @param options.quantity - Only iOS, the number of items you wish to purchase. Will use 1 by default.
+   */
   purchaseProduct(options: {
     productIdentifier: string;
-    quantity: number;
+    productType?: PURCHASE_TYPE;
+    quantity?: number;
   }): Promise<{ customerInfo: CustomerInfo }>;
 
+  /**
+   * Gets the product info associated with a list of product identifiers.
+   *
+   * @param options - The product identifiers you wish to retrieve information for
+   * @param options.productIdentifiers - Array of product identifiers
+   * @param options.productType - Only Android, the type of product, can be inapp or subs. Will use inapp by default.
+   * @returns - The requested product info
+   */
   getProducts(options: {
     productIdentifiers: string[];
+    productType?: PURCHASE_TYPE;
   }): Promise<{ products: Product[] }>;
 }

@@ -30,6 +30,7 @@ Add this to manifest
 * [`purchaseProduct(...)`](#purchaseproduct)
 * [`getProducts(...)`](#getproducts)
 * [Interfaces](#interfaces)
+* [Enums](#enums)
 
 </docgen-index>
 
@@ -52,12 +53,14 @@ Restores a user's previous  and links their appUserIDs to any user's also using 
 ### purchaseProduct(...)
 
 ```typescript
-purchaseProduct(options: { productIdentifier: string; quantity: number; }) => any
+purchaseProduct(options: { productIdentifier: string; productType?: PURCHASE_TYPE; quantity?: number; }) => any
 ```
 
-| Param         | Type                                                          |
-| ------------- | ------------------------------------------------------------- |
-| **`options`** | <code>{ productIdentifier: string; quantity: number; }</code> |
+Started purchase process for the given product.
+
+| Param         | Type                                                                                                                     | Description               |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------- |
+| **`options`** | <code>{ productIdentifier: string; productType?: <a href="#purchase_type">PURCHASE_TYPE</a>; quantity?: number; }</code> | - The product to purchase |
 
 **Returns:** <code>any</code>
 
@@ -67,12 +70,14 @@ purchaseProduct(options: { productIdentifier: string; quantity: number; }) => an
 ### getProducts(...)
 
 ```typescript
-getProducts(options: { productIdentifiers: string[]; }) => any
+getProducts(options: { productIdentifiers: string[]; productType?: PURCHASE_TYPE; }) => any
 ```
 
-| Param         | Type                                     |
-| ------------- | ---------------------------------------- |
-| **`options`** | <code>{ productIdentifiers: {}; }</code> |
+Gets the product info associated with a list of product identifiers.
+
+| Param         | Type                                                                                               | Description                                                    |
+| ------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| **`options`** | <code>{ productIdentifiers: {}; productType?: <a href="#purchase_type">PURCHASE_TYPE</a>; }</code> | - The product identifiers you wish to retrieve information for |
 
 **Returns:** <code>any</code>
 
@@ -146,5 +151,16 @@ getProducts(options: { productIdentifiers: string[]; }) => any
 | **`paymentMode`**        | <code>number</code>                                               | The <a href="#product">Product</a> discount paymentMode.                 |
 | **`numberOfPeriods`**    | <code>number</code>                                               | The <a href="#product">Product</a> discount number Of Periods.           |
 | **`subscriptionPeriod`** | <code><a href="#subscriptionperiod">SubscriptionPeriod</a></code> | The <a href="#product">Product</a> discount subscription period.         |
+
+
+### Enums
+
+
+#### PURCHASE_TYPE
+
+| Members     | Value                | Description                        |
+| ----------- | -------------------- | ---------------------------------- |
+| **`INAPP`** | <code>"inapp"</code> | A type of SKU for in-app products. |
+| **`SUBS`**  | <code>"subs"</code>  | A type of SKU for subscriptions.   |
 
 </docgen-api>
