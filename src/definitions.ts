@@ -326,7 +326,7 @@ export interface NativePurchasesPlugin {
     productIdentifier: string;
     productType?: PURCHASE_TYPE;
     quantity?: number;
-  }): Promise<{ customerInfo: CustomerInfo }>;
+  }): Promise<{ transactionId: string }>;
 
   /**
    * Gets the product info associated with a list of product identifiers.
