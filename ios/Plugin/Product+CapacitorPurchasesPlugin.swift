@@ -46,6 +46,7 @@ extension Product {
             "title": self.displayName,
             "price": self.price,
             "priceString": self.displayPrice,
+            "currencyCode": self.priceFormatStyle.currencyCode,
             "isFamilyShareable": self.isFamilyShareable,
         ]
     }
