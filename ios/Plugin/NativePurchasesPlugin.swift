@@ -16,11 +16,11 @@ public class NativePurchasesPlugin: CAPPlugin {
             print("purchaseProduct")
             let productIdentifier = call.getString("productIdentifier", "")
             let quantity = call.getInt("quantity", 1)
-            if (productIdentifier.isEmpty) {
+            if productIdentifier.isEmpty {
                 call.reject("productIdentifier is Empty, give an id")
                 return
             }
-            
+
             Task {
                 do {
                     let products = try await Product.products(for: [productIdentifier])
@@ -30,23 +30,23 @@ public class NativePurchasesPlugin: CAPPlugin {
                     let result = try await product.purchase(options: purchaseOptions)
                     print("purchaseProduct result \(result)")
                     switch result {
-                        case let .success(.verified(transaction)):
-                            // Successful purhcase
-                            await transaction.finish()
-                            call.resolve(["transactionId": transaction.id])
-                        case let .success(.unverified(_, error)):
-                            // Successful purchase but transaction/receipt can't be verified
-                            // Could be a jailbroken phone
-                            call.reject(error.localizedDescription)
-                        case .pending:
-                            // Transaction waiting on SCA (Strong Customer Authentication) or
-                            // approval from Ask to Buy
-                            call.reject("Transaction pending")
-                        case .userCancelled:
-                            // ^^^
-                            call.reject("User cancelled")
-                        @unknown default:
-                            call.reject("Unknown error")
+                    case let .success(.verified(transaction)):
+                        // Successful purhcase
+                        await transaction.finish()
+                        call.resolve(["transactionId": transaction.id])
+                    case let .success(.unverified(_, error)):
+                        // Successful purchase but transaction/receipt can't be verified
+                        // Could be a jailbroken phone
+                        call.reject(error.localizedDescription)
+                    case .pending:
+                        // Transaction waiting on SCA (Strong Customer Authentication) or
+                        // approval from Ask to Buy
+                        call.reject("Transaction pending")
+                    case .userCancelled:
+                        // ^^^
+                        call.reject("User cancelled")
+                    @unknown default:
+                        call.reject("Unknown error")
                     }
                 } catch {
                     print(error)
@@ -100,7 +100,5 @@ public class NativePurchasesPlugin: CAPPlugin {
             call.reject("Not implemented under ios 15")
         }
     }
-
-
 
 }

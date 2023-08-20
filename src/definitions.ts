@@ -314,7 +314,12 @@ export interface NativePurchasesPlugin {
    */
   restorePurchases(): Promise<{ customerInfo: CustomerInfo }>;
 
-  purchaseProduct(options: {productIdentifier: string, quantity: number}): Promise<{ customerInfo: CustomerInfo }>;
+  purchaseProduct(options: {
+    productIdentifier: string;
+    quantity: number;
+  }): Promise<{ customerInfo: CustomerInfo }>;
 
-  getProducts(options: {productIdentifiers: string[]}): Promise<{ products: Product[] }>;
+  getProducts(options: {
+    productIdentifiers: string[];
+  }): Promise<{ products: Product[] }>;
 }

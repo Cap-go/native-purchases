@@ -1,11 +1,10 @@
-import { WebPlugin } from '@capacitor/core';
+import { WebPlugin } from "@capacitor/core";
 
-import type { 
+import type {
   NativePurchasesPlugin,
   CustomerInfo,
   Product,
-} from './definitions';
-
+} from "./definitions";
 
 export const mockCustomerInfo: CustomerInfo = {
   activeSubscriptions: [""],
@@ -20,18 +19,26 @@ export const mockCustomerInfo: CustomerInfo = {
   managementURL: null,
 };
 
-export class NativePurchasesWeb extends WebPlugin implements NativePurchasesPlugin {
+export class NativePurchasesWeb
+  extends WebPlugin
+  implements NativePurchasesPlugin
+{
   async restorePurchases(): Promise<{ customerInfo: CustomerInfo }> {
     console.error("purchasePackage only mocked in web");
     return { customerInfo: mockCustomerInfo };
   }
 
-  async getProducts(options: { productIdentifiers: string[]; }): Promise<{ products: Product[]; }> {
+  async getProducts(options: {
+    productIdentifiers: string[];
+  }): Promise<{ products: Product[] }> {
     console.error("getProducts only mocked in web " + options);
     return { products: [] };
   }
 
-  async purchaseProduct(options: { productIdentifier: string; quantity: number; }): Promise<{ customerInfo: CustomerInfo; }> {
+  async purchaseProduct(options: {
+    productIdentifier: string;
+    quantity: number;
+  }): Promise<{ customerInfo: CustomerInfo }> {
     console.error("purchaseProduct only mocked in web" + options);
     return { customerInfo: mockCustomerInfo };
   }
