@@ -9,6 +9,14 @@ npm install native-purchases
 npx cap sync
 ```
 
+## Android
+
+Add this to manifest
+
+```xml
+<uses-permission android:name="com.android.vending.BILLING" />
+```
+
 ## API
 
 <docgen-index>
