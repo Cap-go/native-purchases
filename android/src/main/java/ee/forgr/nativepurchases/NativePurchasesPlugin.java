@@ -12,6 +12,9 @@ import com.android.billingclient.api.ProductDetailsResponseListener;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.QueryProductDetailsParams;
+import com.android.billingclient.api.SkuDetails;
+import com.android.billingclient.api.SkuDetailsParams;
+import com.android.billingclient.api.SkuDetailsResponseListener;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -148,6 +151,7 @@ public class NativePurchasesPlugin extends Plugin {
   public void purchaseProduct(PluginCall call) {
     String productIdentifier = call.getString("productIdentifier");
     String productType = call.getString("productType", "inapp");
+    Number quantity = call.getInt("quantity", 1);
     // cannot use quantity, because it's done in native modal
     Log.d("CapacitorPurchases", "purchaseProduct: " + productIdentifier);
     if (productIdentifier.isEmpty()) {
@@ -155,12 +159,42 @@ public class NativePurchasesPlugin extends Plugin {
       call.reject("productIdentifier is empty");
       return;
     }
+    //    List<String> skuList = new ArrayList<>();
+    //    skuList.add(productIdentifier);
+    //    SkuDetailsParams params = SkuDetailsParams.newBuilder().setSkusList(skuList).setType(productType == "inapp"
+    //            ? BillingClient.SkuType.INAPP
+    //            : BillingClient.SkuType.SUBS).build();
+    //
+    //    billingClient.querySkuDetailsAsync(params, new SkuDetailsResponseListener() {
+    //      @Override
+    //      public void onSkuDetailsResponse(BillingResult billingResult, List<com.android.billingclient.api.SkuDetails> skuDetailsList) {
+    //        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && skuDetailsList != null) {
+    //          for (SkuDetails skuDetails : skuDetailsList) {
+    //            if (skuDetails.getSku().equals(productIdentifier)) {
+    //              BillingFlowParams flowParams = BillingFlowParams.newBuilder()
+    //                      .setSkuDetails(skuDetails)
+    //                      // set quantity here
+    //
+    //                      .setQuantity(quantity) // Set the quantity here
+    //                      .build();
+    //              BillingResult billingResult2 = billingClient.launchBillingFlow(getActivity(), flowParams);
+    //              Log.i(
+    //                "NativePurchases",
+    //                "onProductDetailsResponse2" + billingResult2
+    //              );
+    //            }
+    //          }
+    //        } else {
+    //          // Handle error: unable to query SKU details
+    //        }
+    //      }
+    //    });
     ImmutableList<QueryProductDetailsParams.Product> productList = ImmutableList.of(
       QueryProductDetailsParams.Product
         .newBuilder()
         .setProductId(productIdentifier)
         .setProductType(
-          productType == "inapp"
+          productType.equals("inapp")
             ? BillingClient.ProductType.INAPP
             : BillingClient.ProductType.SUBS
         )
@@ -178,24 +212,25 @@ public class NativePurchasesPlugin extends Plugin {
           BillingResult billingResult,
           List<ProductDetails> productDetailsList
         ) {
-          Log.i(
-            "NativePurchases",
-            "onProductDetailsResponse" + billingResult + productDetailsList
-          );
           // Process the result
-          ProductDetails productDetails = productDetailsList.get(0);
-          ImmutableList<BillingFlowParams.ProductDetailsParams> productDetailsParamsList = ImmutableList.of(
-            BillingFlowParams.ProductDetailsParams
+          List<BillingFlowParams.ProductDetailsParams> productDetailsParamsList = new ArrayList<>();
+          for (ProductDetails productDetailsItem : productDetailsList) {
+            BillingFlowParams.ProductDetailsParams.Builder productDetailsParams = BillingFlowParams.ProductDetailsParams
               .newBuilder()
-              .setProductDetails(productDetails)
-              .build()
-          );
-
+              .setProductDetails(productDetailsItem);
+            if (productType.equals("subs")) {
+              String offertoken = productDetailsItem
+                .getSubscriptionOfferDetails()
+                .get(0)
+                .getOfferToken();
+              productDetailsParams.setOfferToken(offertoken);
+            }
+            productDetailsParamsList.add(productDetailsParams.build());
+          }
           BillingFlowParams billingFlowParams = BillingFlowParams
             .newBuilder()
             .setProductDetailsParamsList(productDetailsParamsList)
             .build();
-
           // Launch the billing flow
           BillingResult billingResult2 = billingClient.launchBillingFlow(
             getActivity(),
@@ -239,7 +274,7 @@ public class NativePurchasesPlugin extends Plugin {
           .newBuilder()
           .setProductId(productIdentifier)
           .setProductType(
-            productType == "inapp"
+            productType.equals("inapp")
               ? BillingClient.ProductType.INAPP
               : BillingClient.ProductType.SUBS
           )
