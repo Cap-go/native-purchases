@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.17](https://github.com/Cap-go/native-purchases/compare/0.0.16...0.0.17) (2023-08-23)
+
+
+### Bug Fixes
+
+* type defs ([e56ffef](https://github.com/Cap-go/native-purchases/commit/e56ffeffa6cd8bd3ac93616b26a003f6224b7dba))
+
 ### [0.0.16](https://github.com/Cap-go/native-purchases/compare/0.0.15...0.0.16) (2023-08-21)
 
 
