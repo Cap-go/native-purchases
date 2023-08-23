@@ -261,6 +261,10 @@ public class NativePurchasesPlugin extends Plugin {
   @PluginMethod
   public void getProducts(PluginCall call) {
     JSONArray productIdentifiersArray = call.getArray("productIdentifiers");
+    if (productIdentifiersArray == null) {
+      call.reject("productIdentifiers is missing");
+      return;
+    }
     String productType = call.getString("productType", "inapp");
     List<String> productIdentifiers = new ArrayList<>();
 
