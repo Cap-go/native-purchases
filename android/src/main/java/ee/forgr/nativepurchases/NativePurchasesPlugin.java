@@ -212,6 +212,12 @@ public class NativePurchasesPlugin extends Plugin {
           BillingResult billingResult,
           List<ProductDetails> productDetailsList
         ) {
+          if(productDetailsList.size() == 0) {
+            billingClient.endConnection();
+            billingClient = null;
+            call.reject("Product not found");
+            return;
+          }
           // Process the result
           List<BillingFlowParams.ProductDetailsParams> productDetailsParamsList = new ArrayList<>();
           for (ProductDetails productDetailsItem : productDetailsList) {
@@ -293,6 +299,12 @@ public class NativePurchasesPlugin extends Plugin {
           BillingResult billingResult,
           List<ProductDetails> productDetailsList
         ) {
+          if(productDetailsList.size() == 0) {
+            billingClient.endConnection();
+            billingClient = null;
+            call.reject("Product not found");
+            return;
+          }
           Log.i(
             "NativePurchases",
             "onProductDetailsResponse" + billingResult + productDetailsList
