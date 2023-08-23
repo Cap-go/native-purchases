@@ -5,7 +5,7 @@
 <h2><a href="https://capgo.app/">Check out: Capgo — live updates for capacitor</a></h2>
 </div>
 
-In-app Subscriptions Made Easy
+In-app Purchases Made Easy
 
 ## Install
 

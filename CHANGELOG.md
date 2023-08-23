@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.19](https://github.com/Cap-go/native-purchases/compare/0.0.18...0.0.19) (2023-08-23)
+
+### [0.0.18](https://github.com/Cap-go/native-purchases/compare/0.0.17...0.0.18) (2023-08-23)
+
+
+### Bug Fixes
+
+* reject if no product ([a571552](https://github.com/Cap-go/native-purchases/commit/a571552a0808dd69399770364e0793d0c3796b9b))
+
 ### [0.0.17](https://github.com/Cap-go/native-purchases/compare/0.0.16...0.0.17) (2023-08-23)
 
 
