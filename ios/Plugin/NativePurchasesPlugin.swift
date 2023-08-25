@@ -11,6 +11,18 @@ public class NativePurchasesPlugin: CAPPlugin {
 
     private let PLUGIN_VERSION = "2.0.13"
 
+    @objc func isBillingSupported(_ call: CAPPluginCall) {
+        if #available(iOS 15, *) {
+            call.resolve([
+                "isBillingSupported": true
+            ])
+        } else {
+            call.resolve([
+                "isBillingSupported": false
+            ])
+        }
+    }
+
     @objc func purchaseProduct(_ call: CAPPluginCall) {
         if #available(iOS 15, *) {
             print("purchaseProduct")

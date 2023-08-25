@@ -42,4 +42,9 @@ export class NativePurchasesWeb
     console.error("purchaseProduct only mocked in web" + options);
     return { transactionId: "transactionId" };
   }
+
+  async isBillingSupported(): Promise<{ isBillingSupported: boolean }> {
+    console.error("isBillingSupported only mocked in web");
+    return { isBillingSupported: false };
+  }
 }

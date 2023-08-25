@@ -33,6 +33,12 @@ public class NativePurchasesPlugin extends Plugin {
   public final String PLUGIN_VERSION = "2.0.13";
   private BillingClient billingClient;
 
+  private void isBillingSupported(PluginCall call) {
+    JSObject ret = new JSObject();
+    ret.put("isBillingSupported", true);
+    call.resolve();
+  }
+
   private void handlePurchase(Purchase purchase, PluginCall purchaseCall) {
     if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
       // Grant entitlement to the user, then acknowledge the purchase
@@ -212,7 +218,7 @@ public class NativePurchasesPlugin extends Plugin {
           BillingResult billingResult,
           List<ProductDetails> productDetailsList
         ) {
-          if(productDetailsList.size() == 0) {
+          if (productDetailsList.size() == 0) {
             billingClient.endConnection();
             billingClient = null;
             call.reject("Product not found");
@@ -303,7 +309,7 @@ public class NativePurchasesPlugin extends Plugin {
           BillingResult billingResult,
           List<ProductDetails> productDetailsList
         ) {
-          if(productDetailsList.size() == 0) {
+          if (productDetailsList.size() == 0) {
             billingClient.endConnection();
             billingClient = null;
             call.reject("Product not found");

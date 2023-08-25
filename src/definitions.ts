@@ -145,15 +145,15 @@ export interface Transaction {
   /**
    * RevenueCat Id associated to the transaction.
    */
-  readonly transactionIdentifier: string;
+  readonly transactionId: string;
   /**
    * Product Id associated with the transaction.
    */
-  readonly productIdentifier: string;
+  // readonly productIdentifier: string;
   /**
    * Purchase date of the transaction in ISO 8601 format.
    */
-  readonly purchaseDate: string;
+  // readonly purchaseDate: string;
 }
 
 export interface CustomerInfo {
@@ -326,7 +326,7 @@ export interface NativePurchasesPlugin {
     productIdentifier: string;
     productType?: PURCHASE_TYPE;
     quantity?: number;
-  }): Promise<{ transactionId: string }>;
+  }): Promise<Transaction>;
 
   /**
    * Gets the product info associated with a list of product identifiers.
@@ -340,4 +340,11 @@ export interface NativePurchasesPlugin {
     productIdentifiers: string[];
     productType?: PURCHASE_TYPE;
   }): Promise<{ products: Product[] }>;
+
+  /**
+   * Check if billing is supported for the current device.
+   *
+   *
+   */
+  isBillingSupported(): Promise<{ isBillingSupported: boolean }>;
 }

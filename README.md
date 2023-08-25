@@ -29,6 +29,7 @@ Add this to manifest
 * [`restorePurchases()`](#restorepurchases)
 * [`purchaseProduct(...)`](#purchaseproduct)
 * [`getProducts(...)`](#getproducts)
+* [`isBillingSupported()`](#isbillingsupported)
 * [Interfaces](#interfaces)
 * [Enums](#enums)
 
@@ -84,6 +85,19 @@ Gets the product info associated with a list of product identifiers.
 --------------------
 
 
+### isBillingSupported()
+
+```typescript
+isBillingSupported() => any
+```
+
+Check if billing is supported for the current device.
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
 ### Interfaces
 
 
@@ -105,11 +119,9 @@ Gets the product info associated with a list of product identifiers.
 
 #### Transaction
 
-| Prop                        | Type                | Description                                                        |
-| --------------------------- | ------------------- | ------------------------------------------------------------------ |
-| **`transactionIdentifier`** | <code>string</code> | RevenueCat Id associated to the transaction.                       |
-| **`productIdentifier`**     | <code>string</code> | <a href="#product">Product</a> Id associated with the transaction. |
-| **`purchaseDate`**          | <code>string</code> | Purchase date of the transaction in ISO 8601 format.               |
+| Prop                | Type                | Description                                  |
+| ------------------- | ------------------- | -------------------------------------------- |
+| **`transactionId`** | <code>string</code> | RevenueCat Id associated to the transaction. |
 
 
 #### Product
