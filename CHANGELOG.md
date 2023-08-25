@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.22](https://github.com/Cap-go/native-purchases/compare/0.0.21...0.0.22) (2023-08-25)
+
+
+### Bug Fixes
+
+* missing declaration IOS ([599eb94](https://github.com/Cap-go/native-purchases/commit/599eb947a8dc86ab474819f81555028c9fb5d293))
+
 ### [0.0.21](https://github.com/Cap-go/native-purchases/compare/0.0.20...0.0.21) (2023-08-25)
 
 ### [0.0.20](https://github.com/Cap-go/native-purchases/compare/0.0.19...0.0.20) (2023-08-23)
