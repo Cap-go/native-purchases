@@ -37,6 +37,7 @@ export class NativePurchasesWeb
 
   async purchaseProduct(options: {
     productIdentifier: string;
+    planIdentifier: string;
     quantity: number;
   }): Promise<{ transactionId: string }> {
     console.error("purchaseProduct only mocked in web" + options);

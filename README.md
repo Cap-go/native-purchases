@@ -54,14 +54,14 @@ Restores a user's previous  and links their appUserIDs to any user's also using 
 ### purchaseProduct(...)
 
 ```typescript
-purchaseProduct(options: { productIdentifier: string; productType?: PURCHASE_TYPE; quantity?: number; }) => any
+purchaseProduct(options: { productIdentifier: string; planIdentifier?: string; productType?: PURCHASE_TYPE; quantity?: number; }) => any
 ```
 
 Started purchase process for the given product.
 
-| Param         | Type                                                                                                                     | Description               |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------- |
-| **`options`** | <code>{ productIdentifier: string; productType?: <a href="#purchase_type">PURCHASE_TYPE</a>; quantity?: number; }</code> | - The product to purchase |
+| Param         | Type                                                                                                                                              | Description               |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| **`options`** | <code>{ productIdentifier: string; planIdentifier?: string; productType?: <a href="#purchase_type">PURCHASE_TYPE</a>; quantity?: number; }</code> | - The product to purchase |
 
 **Returns:** <code>any</code>
 

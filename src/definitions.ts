@@ -320,10 +320,12 @@ export interface NativePurchasesPlugin {
    * @param options - The product to purchase
    * @param options.productIdentifier - The product identifier of the product you want to purchase.
    * @param options.productType - Only Android, the type of product, can be inapp or subs. Will use inapp by default.
+   * @param options.planIdentifier - Only Android, the identifier of the plan you want to purchase.
    * @param options.quantity - Only iOS, the number of items you wish to purchase. Will use 1 by default.
    */
   purchaseProduct(options: {
     productIdentifier: string;
+    planIdentifier?: string;
     productType?: PURCHASE_TYPE;
     quantity?: number;
   }): Promise<Transaction>;

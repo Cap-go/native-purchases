@@ -22,6 +22,7 @@ import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import org.json.JSONArray;
@@ -156,6 +157,7 @@ public class NativePurchasesPlugin extends Plugin {
   @PluginMethod
   public void purchaseProduct(PluginCall call) {
     String productIdentifier = call.getString("productIdentifier");
+    String planIdentifier = call.getString("planIdentifier");
     String productType = call.getString("productType", "inapp");
     Number quantity = call.getInt("quantity", 1);
     // cannot use quantity, because it's done in native modal
@@ -165,36 +167,21 @@ public class NativePurchasesPlugin extends Plugin {
       call.reject("productIdentifier is empty");
       return;
     }
-    //    List<String> skuList = new ArrayList<>();
-    //    skuList.add(productIdentifier);
-    //    SkuDetailsParams params = SkuDetailsParams.newBuilder().setSkusList(skuList).setType(productType == "inapp"
-    //            ? BillingClient.SkuType.INAPP
-    //            : BillingClient.SkuType.SUBS).build();
-    //
-    //    billingClient.querySkuDetailsAsync(params, new SkuDetailsResponseListener() {
-    //      @Override
-    //      public void onSkuDetailsResponse(BillingResult billingResult, List<com.android.billingclient.api.SkuDetails> skuDetailsList) {
-    //        if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK && skuDetailsList != null) {
-    //          for (SkuDetails skuDetails : skuDetailsList) {
-    //            if (skuDetails.getSku().equals(productIdentifier)) {
-    //              BillingFlowParams flowParams = BillingFlowParams.newBuilder()
-    //                      .setSkuDetails(skuDetails)
-    //                      // set quantity here
-    //
-    //                      .setQuantity(quantity) // Set the quantity here
-    //                      .build();
-    //              BillingResult billingResult2 = billingClient.launchBillingFlow(getActivity(), flowParams);
-    //              Log.i(
-    //                "NativePurchases",
-    //                "onProductDetailsResponse2" + billingResult2
-    //              );
-    //            }
-    //          }
-    //        } else {
-    //          // Handle error: unable to query SKU details
-    //        }
-    //      }
-    //    });
+    if (productType.isEmpty()) {
+      // Handle error: productType is empty
+      call.reject("productType is empty");
+      return;
+    }
+    if (planIdentifier.isEmpty()) {
+      // Handle error: quantity is less than 1
+      call.reject("productType is empty");
+      return;
+    }
+    if (quantity.intValue() < 1) {
+      // Handle error: quantity is less than 1
+      call.reject("quantity is less than 1");
+      return;
+    }
     ImmutableList<QueryProductDetailsParams.Product> productList = ImmutableList.of(
       QueryProductDetailsParams.Product
         .newBuilder()
@@ -231,11 +218,22 @@ public class NativePurchasesPlugin extends Plugin {
               .newBuilder()
               .setProductDetails(productDetailsItem);
             if (productType.equals("subs")) {
-              String offertoken = productDetailsItem
-                .getSubscriptionOfferDetails()
-                .get(0)
-                .getOfferToken();
-              productDetailsParams.setOfferToken(offertoken);
+              // list the SubscriptionOfferDetails and find the one who match the planIdentifier if not found get the first one
+              ProductDetails.SubscriptionOfferDetails selectedOfferDetails =
+                null;
+              for (ProductDetails.SubscriptionOfferDetails offerDetails : productDetailsItem.getSubscriptionOfferDetails()) {
+                if (offerDetails.getOfferId().equals(planIdentifier)) {
+                  selectedOfferDetails = offerDetails;
+                  break;
+                }
+              }
+              if (selectedOfferDetails == null) {
+                selectedOfferDetails =
+                  productDetailsItem.getSubscriptionOfferDetails().get(0);
+              }
+              productDetailsParams.setOfferToken(
+                selectedOfferDetails.getOfferToken()
+              );
             }
             productDetailsParamsList.add(productDetailsParams.build());
           }
