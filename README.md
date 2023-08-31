@@ -72,14 +72,14 @@ Started purchase process for the given product.
 ### getProducts(...)
 
 ```typescript
-getProducts(options: { productIdentifiers: string[]; productType?: PURCHASE_TYPE; }) => any
+getProducts(options: { productIdentifiers: string[]; planIdentifier?: string; productType?: PURCHASE_TYPE; }) => any
 ```
 
 Gets the product info associated with a list of product identifiers.
 
-| Param         | Type                                                                                               | Description                                                    |
-| ------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| **`options`** | <code>{ productIdentifiers: {}; productType?: <a href="#purchase_type">PURCHASE_TYPE</a>; }</code> | - The product identifiers you wish to retrieve information for |
+| Param         | Type                                                                                                                        | Description                                                    |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| **`options`** | <code>{ productIdentifiers: {}; planIdentifier?: string; productType?: <a href="#purchase_type">PURCHASE_TYPE</a>; }</code> | - The product identifiers you wish to retrieve information for |
 
 **Returns:** <code>any</code>
 
