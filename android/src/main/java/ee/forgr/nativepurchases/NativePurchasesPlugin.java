@@ -265,6 +265,7 @@ public class NativePurchasesPlugin extends Plugin {
   @PluginMethod
   public void getProducts(PluginCall call) {
     JSONArray productIdentifiersArray = call.getArray("productIdentifiers");
+    String planIdentifier = call.getString("planIdentifier");
     if (productIdentifiersArray == null) {
       call.reject("productIdentifiers is missing");
       return;
@@ -286,7 +287,9 @@ public class NativePurchasesPlugin extends Plugin {
       productList.add(
         QueryProductDetailsParams.Product
           .newBuilder()
-          .setProductId(productIdentifier)
+          .setProductId(
+            productType.equals("inapp") ? productIdentifier : planIdentifier
+          )
           .setProductType(
             productType.equals("inapp")
               ? BillingClient.ProductType.INAPP
@@ -320,30 +323,80 @@ public class NativePurchasesPlugin extends Plugin {
           // Process the result
           JSObject ret = new JSObject();
           JSONArray products = new JSONArray();
+          Number productIdIndex = 0;
           for (ProductDetails productDetails : productDetailsList) {
             JSObject product = new JSObject();
             product.put("identifier", productDetails.getProductId());
             product.put("title", productDetails.getTitle());
             product.put("description", productDetails.getDescription());
-            product.put(
-              "price",
-              productDetails
-                .getOneTimePurchaseOfferDetails()
-                .getPriceAmountMicros() /
-              1000000.0
-            );
-            product.put(
-              "priceString",
-              productDetails
-                .getOneTimePurchaseOfferDetails()
-                .getFormattedPrice()
-            );
-            product.put(
-              "currencyCode",
-              productDetails
-                .getOneTimePurchaseOfferDetails()
-                .getPriceCurrencyCode()
-            );
+            if (productType.equals("inapp")) {
+              product.put(
+                "price",
+                productDetails
+                  .getOneTimePurchaseOfferDetails()
+                  .getPriceAmountMicros() /
+                1000000.0
+              );
+              product.put(
+                "priceString",
+                productDetails
+                  .getOneTimePurchaseOfferDetails()
+                  .getFormattedPrice()
+              );
+              product.put(
+                "currencyCode",
+                productDetails
+                  .getOneTimePurchaseOfferDetails()
+                  .getPriceCurrencyCode()
+              );
+            } else {
+              // productIdIndex is used to get the correct SubscriptionOfferDetails by productIdentifiersArray index and increment it
+              String subscriptionOfferIdentifier = productIdentifiers.get(
+                productIdIndex.intValue()
+              );
+              productIdIndex = productIdIndex.intValue() + 1;
+              // get the SubscriptionOfferDetails who match the subscriptionOfferIdentifier
+              ProductDetails.SubscriptionOfferDetails selectedOfferDetails =
+                null;
+              for (ProductDetails.SubscriptionOfferDetails offerDetails : productDetails.getSubscriptionOfferDetails()) {
+                if (
+                  offerDetails.getOfferId().equals(subscriptionOfferIdentifier)
+                ) {
+                  selectedOfferDetails = offerDetails;
+                  break;
+                }
+              }
+              if (selectedOfferDetails == null) {
+                selectedOfferDetails =
+                  productDetails.getSubscriptionOfferDetails().get(0);
+              }
+              product.put(
+                "price",
+                selectedOfferDetails
+                  .getPricingPhases()
+                  .getPricingPhaseList()
+                  .get(0)
+                  .getPriceAmountMicros() /
+                1000000.0
+              );
+              product.put(
+                "priceString",
+                selectedOfferDetails
+                  .getPricingPhases()
+                  .getPricingPhaseList()
+                  .get(0)
+                  .getFormattedPrice()
+              );
+              product.put(
+                "currencyCode",
+                selectedOfferDetails
+                  .getPricingPhases()
+                  .getPricingPhaseList()
+                  .get(0)
+                  .getPriceCurrencyCode()
+              );
+            }
+
             product.put("isFamilyShareable", false);
             products.put(product);
           }
