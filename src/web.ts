@@ -51,5 +51,5 @@ export class NativePurchasesWeb
   async getPluginVersion(): Promise<{ version: string }> {
     console.warn("Cannot get plugin version in web");
     return { version: "default" };
-  } 
+  }
 }

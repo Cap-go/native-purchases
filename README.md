@@ -30,6 +30,7 @@ Add this to manifest
 * [`purchaseProduct(...)`](#purchaseproduct)
 * [`getProducts(...)`](#getproducts)
 * [`isBillingSupported()`](#isbillingsupported)
+* [`getPluginVersion()`](#getpluginversion)
 * [Interfaces](#interfaces)
 * [Enums](#enums)
 
@@ -92,6 +93,19 @@ isBillingSupported() => any
 ```
 
 Check if billing is supported for the current device.
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### getPluginVersion()
+
+```typescript
+getPluginVersion() => any
+```
+
+Get the native Capacitor plugin version
 
 **Returns:** <code>any</code>
 
