@@ -183,9 +183,9 @@ public class NativePurchasesPlugin extends Plugin {
       call.reject("productType is empty");
       return;
     }
-    if (planIdentifier.isEmpty()) {
-      // Handle error: quantity is less than 1
-      call.reject("productType is empty");
+    if (productType.equals("subs") && planIdentifier.isEmpty()) {
+      // Handle error: no planIdentifier with productType subs
+      call.reject("planIdentifier cannot be empty if productType is subs");
       return;
     }
     if (quantity.intValue() < 1) {
@@ -277,11 +277,16 @@ public class NativePurchasesPlugin extends Plugin {
   public void getProducts(PluginCall call) {
     JSONArray productIdentifiersArray = call.getArray("productIdentifiers");
     String planIdentifier = call.getString("planIdentifier");
-    if (productIdentifiersArray == null) {
-      call.reject("productIdentifiers is missing");
+    String productType = call.getString("productType", "inapp");
+    if (productType.equals("subs") && planIdentifier.isEmpty()) {
+      // Handle error: no planIdentifier with productType subs
+      call.reject("planIdentifier cannot be empty if productType is subs");
       return;
     }
-    String productType = call.getString("productType", "inapp");
+    if (productIdentifiersArray == null || productIdentifiersArray.length() == 0) {
+      call.reject("productIdentifiers array missing");
+      return;
+    }
     List<String> productIdentifiers = new ArrayList<>();
 
     for (int i = 0; i < productIdentifiersArray.length(); i++) {
