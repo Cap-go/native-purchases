@@ -48,4 +48,8 @@ export class NativePurchasesWeb
     console.error("isBillingSupported only mocked in web");
     return { isBillingSupported: false };
   }
+  async getPluginVersion(): Promise<{ version: string }> {
+    console.warn("Cannot get plugin version in web");
+    return { version: "default" };
+  } 
 }

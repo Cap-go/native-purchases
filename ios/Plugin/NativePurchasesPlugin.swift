@@ -9,7 +9,11 @@ import StoreKit
 @objc(NativePurchasesPlugin)
 public class NativePurchasesPlugin: CAPPlugin {
 
-    private let PLUGIN_VERSION = "2.0.13"
+    private let PLUGIN_VERSION = "0.0.25"
+
+    @objc func getPluginVersion(_ call: CAPPluginCall) {
+        call.resolve(["version": self.PLUGIN_VERSION])
+    }
 
     @objc func isBillingSupported(_ call: CAPPluginCall) {
         if #available(iOS 15, *) {

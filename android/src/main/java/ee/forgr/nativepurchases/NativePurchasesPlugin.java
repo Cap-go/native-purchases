@@ -31,7 +31,7 @@ import org.json.JSONException;
 @CapacitorPlugin(name = "NativePurchases")
 public class NativePurchasesPlugin extends Plugin {
 
-  public final String PLUGIN_VERSION = "2.0.13";
+  public final String PLUGIN_VERSION = "0.0.25";
   private BillingClient billingClient;
 
   private void isBillingSupported(PluginCall call) {
@@ -151,6 +151,18 @@ public class NativePurchasesPlugin extends Plugin {
       semaphoreReady.await();
     } catch (InterruptedException e) {
       e.printStackTrace();
+    }
+  }
+
+  @PluginMethod
+  public void getPluginVersion(final PluginCall call) {
+    try {
+      final JSObject ret = new JSObject();
+      ret.put("version", this.PLUGIN_VERSION);
+      call.resolve(ret);
+    } catch (final Exception e) {
+      Log.e(CapacitorUpdater.TAG, "Could not get plugin version", e);
+      call.reject("Could not get plugin version", e);
     }
   }
 

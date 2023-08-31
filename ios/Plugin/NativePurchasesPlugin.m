@@ -8,4 +8,5 @@ CAP_PLUGIN(NativePurchasesPlugin, "NativePurchases",
         CAP_PLUGIN_METHOD(purchaseProduct, CAPPluginReturnPromise);
         CAP_PLUGIN_METHOD(restorePurchases, CAPPluginReturnPromise);
         CAP_PLUGIN_METHOD(isBillingSupported, CAPPluginReturnPromise);
+        CAP_PLUGIN_METHOD(getPluginVersion, CAPPluginReturnPromise);
 )
