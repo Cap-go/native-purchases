@@ -32,12 +32,67 @@ import org.json.JSONException;
 public class NativePurchasesPlugin extends Plugin {
 
   public final String PLUGIN_VERSION = "0.0.25";
+  public static final String TAG = "NativePurchases";
+  private static final Phaser semaphoreReady = new Phaser(1);
   private BillingClient billingClient;
 
   private void isBillingSupported(PluginCall call) {
     JSObject ret = new JSObject();
     ret.put("isBillingSupported", true);
     call.resolve();
+  }
+
+  @Override
+  public void load() {
+    super.load();
+    Log.i(NativePurchasesPlugin.TAG, "load");
+    semaphoreDown();
+  }
+
+  private void semaphoreWait(Number waitTime) {
+    Log.i(CapacitorUpdater.TAG, "semaphoreWait " + waitTime);
+    try {
+      //        Log.i(CapacitorUpdater.TAG, "semaphoreReady count " + CapacitorUpdaterPlugin.this.semaphoreReady.getCount());
+      CapacitorUpdaterPlugin.this.semaphoreReady.awaitAdvanceInterruptibly(
+          CapacitorUpdaterPlugin.this.semaphoreReady.getPhase(),
+          waitTime.longValue(),
+          TimeUnit.SECONDS
+        );
+      //        Log.i(CapacitorUpdater.TAG, "semaphoreReady await " + res);
+      Log.i(
+        CapacitorUpdater.TAG,
+        "semaphoreReady count " +
+        CapacitorUpdaterPlugin.this.semaphoreReady.getPhase()
+      );
+    } catch (InterruptedException e) {
+      Log.i(CapacitorUpdater.TAG, "semaphoreWait InterruptedException");
+      e.printStackTrace();
+    } catch (TimeoutException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private void semaphoreUp() {
+    Log.i(NativePurchasesPlugin.TAG, "semaphoreUp");
+    NativePurchasesPlugin.this.semaphoreReady.register();
+  }
+
+  private void semaphoreDown() {
+    Log.i(NativePurchasesPlugin.TAG, "semaphoreDown");
+    Log.i(
+      NativePurchasesPlugin.TAG,
+      "semaphoreDown count " +
+      NativePurchasesPlugin.this.semaphoreReady.getPhase()
+    );
+    NativePurchasesPlugin.this.semaphoreReady.arriveAndDeregister();
+  }
+
+  private closeBillingClient() {
+    if (billingClient != null) {
+      billingClient.endConnection();
+      billingClient = null;
+      semaphoreDown();
+    }
   }
 
   private void handlePurchase(Purchase purchase, PluginCall purchaseCall) {
@@ -78,7 +133,7 @@ public class NativePurchasesPlugin extends Plugin {
         public void onAcknowledgePurchaseResponse(BillingResult billingResult) {
           // Handle the result of the acknowledge purchase
           Log.i(
-            "NativePurchases",
+            NativePurchasesPlugin.TAG,
             "onAcknowledgePurchaseResponse" + billingResult
           );
         }
@@ -87,10 +142,9 @@ public class NativePurchasesPlugin extends Plugin {
   }
 
   private void initBillingClient(PluginCall purchaseCall) {
-    if (billingClient != null) {
-      billingClient.endConnection();
-      billingClient = null;
-    }
+    semaphoreWait(10);
+    closeBillingClient();
+    semaphoreUp();
     CountDownLatch semaphoreReady = new CountDownLatch(1);
     billingClient =
       BillingClient
@@ -102,7 +156,7 @@ public class NativePurchasesPlugin extends Plugin {
               BillingResult billingResult,
               List<Purchase> purchases
             ) {
-              Log.i("NativePurchases", "onPurchasesUpdated" + billingResult);
+              Log.i(NativePurchasesPlugin.TAG, "onPurchasesUpdated" + billingResult);
               if (
                 billingResult.getResponseCode() ==
                 BillingClient.BillingResponseCode.OK &&
@@ -114,13 +168,12 @@ public class NativePurchasesPlugin extends Plugin {
                 handlePurchase(purchases.get(0), purchaseCall);
               } else {
                 // Handle any other error codes.
-                Log.i("NativePurchases", "onPurchasesUpdated" + billingResult);
+                Log.i(NativePurchasesPlugin.TAG, "onPurchasesUpdated" + billingResult);
                 if (purchaseCall != null) {
                   purchaseCall.reject("Purchase is not purchased");
                 }
               }
-              billingClient.endConnection();
-              billingClient = null;
+              closeBillingClient();
               return;
             }
           }
@@ -218,8 +271,7 @@ public class NativePurchasesPlugin extends Plugin {
             List<ProductDetails> productDetailsList
           ) {
             if (productDetailsList.size() == 0) {
-              billingClient.endConnection();
-              billingClient = null;
+              closeBillingClient();
               call.reject("Product not found");
               return;
             }
@@ -259,22 +311,21 @@ public class NativePurchasesPlugin extends Plugin {
               billingFlowParams
             );
             Log.i(
-              "NativePurchases",
+              NativePurchasesPlugin.TAG,
               "onProductDetailsResponse2" + billingResult2
             );
           }
         }
       );
     } catch (Exception e) {
-      billingClient.endConnection();
-      billingClient = null;
+      closeBillingClient();
       call.reject(e.getMessage());
     }
   }
 
   @PluginMethod
   public void restorePurchases(PluginCall call) {
-    Log.d("NativePurchases", "restorePurchases");
+    Log.d(NativePurchasesPlugin.TAG, "restorePurchases");
     this.initBillingClient(null);
     call.resolve();
   }
@@ -305,7 +356,7 @@ public class NativePurchasesPlugin extends Plugin {
       }
     }
 
-    Log.d("NativePurchases", "getProducts: " + productIdentifiers);
+    Log.d(NativePurchasesPlugin.TAG, "getProducts: " + productIdentifiers);
     List<QueryProductDetailsParams.Product> productList = new ArrayList<>();
     for (String productIdentifier : productIdentifiers) {
       productList.add(
@@ -336,13 +387,12 @@ public class NativePurchasesPlugin extends Plugin {
             List<ProductDetails> productDetailsList
           ) {
             if (productDetailsList.size() == 0) {
-              billingClient.endConnection();
-              billingClient = null;
+              closeBillingClient();
               call.reject("Product not found");
               return;
             }
             Log.i(
-              "NativePurchases",
+              NativePurchasesPlugin.TAG,
               "onProductDetailsResponse" + billingResult + productDetailsList
             );
             // Process the result
@@ -428,15 +478,13 @@ public class NativePurchasesPlugin extends Plugin {
               products.put(product);
             }
             ret.put("products", products);
-            billingClient.endConnection();
-            billingClient = null;
+            closeBillingClient();
             call.resolve(ret);
           }
         }
       );
     } catch (Exception e) {
-      billingClient.endConnection();
-      billingClient = null;
+      closeBillingClient();
       call.reject(e.getMessage());
     }
   }
