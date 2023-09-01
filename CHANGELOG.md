@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.32](https://github.com/Cap-go/native-purchases/compare/0.0.31...0.0.32) (2023-09-01)
+
+
+### Bug Fixes
+
+* add singleton semaphore initBillingClient ([ed4d137](https://github.com/Cap-go/native-purchases/commit/ed4d137e64cdb3102ba07ba99f2954969e4cc9e4))
+* force finish past transactions ([c09c574](https://github.com/Cap-go/native-purchases/commit/c09c574b44cc6a501bbb81de2c368ef0f77759c9))
+
 ### [0.0.31](https://github.com/Cap-go/native-purchases/compare/0.0.30...0.0.31) (2023-09-01)
 
 
