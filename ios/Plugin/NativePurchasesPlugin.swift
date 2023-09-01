@@ -83,9 +83,9 @@ public class NativePurchasesPlugin: CAPPlugin {
                     do {
                         try await AppStore.sync()
                         // make finish() calls for all transactions
-                        for transaction in AppStore.transactions {
-                            await transaction.finish()
-                        }
+                        // for transaction in AppStore.transactions {
+                        //     await transaction.finish()
+                        // }
                         call.resolve()
                     } catch {
                         call.reject(error.localizedDescription)

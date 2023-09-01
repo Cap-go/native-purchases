@@ -27,6 +27,10 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import org.json.JSONArray;
 import org.json.JSONException;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.Phaser;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 @CapacitorPlugin(name = "NativePurchases")
 public class NativePurchasesPlugin extends Plugin {
@@ -50,22 +54,22 @@ public class NativePurchasesPlugin extends Plugin {
   }
 
   private void semaphoreWait(Number waitTime) {
-    Log.i(CapacitorUpdater.TAG, "semaphoreWait " + waitTime);
+    Log.i(NativePurchasesPlugin.TAG, "semaphoreWait " + waitTime);
     try {
       //        Log.i(CapacitorUpdater.TAG, "semaphoreReady count " + CapacitorUpdaterPlugin.this.semaphoreReady.getCount());
-      CapacitorUpdaterPlugin.this.semaphoreReady.awaitAdvanceInterruptibly(
-          CapacitorUpdaterPlugin.this.semaphoreReady.getPhase(),
+      NativePurchasesPlugin.this.semaphoreReady.awaitAdvanceInterruptibly(
+          NativePurchasesPlugin.this.semaphoreReady.getPhase(),
           waitTime.longValue(),
           TimeUnit.SECONDS
         );
       //        Log.i(CapacitorUpdater.TAG, "semaphoreReady await " + res);
       Log.i(
-        CapacitorUpdater.TAG,
+        NativePurchasesPlugin.TAG,
         "semaphoreReady count " +
-        CapacitorUpdaterPlugin.this.semaphoreReady.getPhase()
+        NativePurchasesPlugin.this.semaphoreReady.getPhase()
       );
     } catch (InterruptedException e) {
-      Log.i(CapacitorUpdater.TAG, "semaphoreWait InterruptedException");
+      Log.i(NativePurchasesPlugin.TAG, "semaphoreWait InterruptedException");
       e.printStackTrace();
     } catch (TimeoutException e) {
       throw new RuntimeException(e);
@@ -87,7 +91,7 @@ public class NativePurchasesPlugin extends Plugin {
     NativePurchasesPlugin.this.semaphoreReady.arriveAndDeregister();
   }
 
-  private closeBillingClient() {
+  private void closeBillingClient() {
     if (billingClient != null) {
       billingClient.endConnection();
       billingClient = null;
