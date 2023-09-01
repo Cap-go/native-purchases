@@ -440,7 +440,7 @@ public class NativePurchasesPlugin extends Plugin {
                 for (ProductDetails.SubscriptionOfferDetails offerDetails : productDetails.getSubscriptionOfferDetails()) {
                   if (
                     offerDetails
-                      .getOfferId()
+                      .getBasePlanId()
                       .equals(subscriptionOfferIdentifier)
                   ) {
                     selectedOfferDetails = offerDetails;
