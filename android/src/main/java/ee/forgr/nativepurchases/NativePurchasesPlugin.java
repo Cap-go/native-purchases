@@ -406,7 +406,7 @@ public class NativePurchasesPlugin extends Plugin {
             for (ProductDetails productDetails : productDetailsList) {
               JSObject product = new JSObject();
               product.put("identifier", productDetails.getProductId());
-              product.put("title", productDetails.getTitle());
+              product.put("title", productDetails.getName());
               product.put("description", productDetails.getDescription());
               if (productType.equals("inapp")) {
                 product.put(
