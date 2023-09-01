@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.31](https://github.com/Cap-go/native-purchases/compare/0.0.30...0.0.31) (2023-09-01)
+
+
+### Bug Fixes
+
+* add try catch ([54723d3](https://github.com/Cap-go/native-purchases/commit/54723d3a70c224245d6dcf6b99e30ded6df5eb43))
+
 ### [0.0.30](https://github.com/Cap-go/native-purchases/compare/0.0.29...0.0.30) (2023-08-31)
 
 
