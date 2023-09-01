@@ -209,61 +209,67 @@ public class NativePurchasesPlugin extends Plugin {
       .setProductList(productList)
       .build();
     this.initBillingClient(call);
-    billingClient.queryProductDetailsAsync(
-      params,
-      new ProductDetailsResponseListener() {
-        public void onProductDetailsResponse(
-          BillingResult billingResult,
-          List<ProductDetails> productDetailsList
-        ) {
-          if (productDetailsList.size() == 0) {
-            billingClient.endConnection();
-            billingClient = null;
-            call.reject("Product not found");
-            return;
-          }
-          // Process the result
-          List<BillingFlowParams.ProductDetailsParams> productDetailsParamsList = new ArrayList<>();
-          for (ProductDetails productDetailsItem : productDetailsList) {
-            BillingFlowParams.ProductDetailsParams.Builder productDetailsParams = BillingFlowParams.ProductDetailsParams
-              .newBuilder()
-              .setProductDetails(productDetailsItem);
-            if (productType.equals("subs")) {
-              // list the SubscriptionOfferDetails and find the one who match the planIdentifier if not found get the first one
-              ProductDetails.SubscriptionOfferDetails selectedOfferDetails =
-                null;
-              for (ProductDetails.SubscriptionOfferDetails offerDetails : productDetailsItem.getSubscriptionOfferDetails()) {
-                if (offerDetails.getOfferId().equals(planIdentifier)) {
-                  selectedOfferDetails = offerDetails;
-                  break;
-                }
-              }
-              if (selectedOfferDetails == null) {
-                selectedOfferDetails =
-                  productDetailsItem.getSubscriptionOfferDetails().get(0);
-              }
-              productDetailsParams.setOfferToken(
-                selectedOfferDetails.getOfferToken()
-              );
+    try {
+      billingClient.queryProductDetailsAsync(
+        params,
+        new ProductDetailsResponseListener() {
+          public void onProductDetailsResponse(
+            BillingResult billingResult,
+            List<ProductDetails> productDetailsList
+          ) {
+            if (productDetailsList.size() == 0) {
+              billingClient.endConnection();
+              billingClient = null;
+              call.reject("Product not found");
+              return;
             }
-            productDetailsParamsList.add(productDetailsParams.build());
+            // Process the result
+            List<BillingFlowParams.ProductDetailsParams> productDetailsParamsList = new ArrayList<>();
+            for (ProductDetails productDetailsItem : productDetailsList) {
+              BillingFlowParams.ProductDetailsParams.Builder productDetailsParams = BillingFlowParams.ProductDetailsParams
+                .newBuilder()
+                .setProductDetails(productDetailsItem);
+              if (productType.equals("subs")) {
+                // list the SubscriptionOfferDetails and find the one who match the planIdentifier if not found get the first one
+                ProductDetails.SubscriptionOfferDetails selectedOfferDetails =
+                  null;
+                for (ProductDetails.SubscriptionOfferDetails offerDetails : productDetailsItem.getSubscriptionOfferDetails()) {
+                  if (offerDetails.getOfferId().equals(planIdentifier)) {
+                    selectedOfferDetails = offerDetails;
+                    break;
+                  }
+                }
+                if (selectedOfferDetails == null) {
+                  selectedOfferDetails =
+                    productDetailsItem.getSubscriptionOfferDetails().get(0);
+                }
+                productDetailsParams.setOfferToken(
+                  selectedOfferDetails.getOfferToken()
+                );
+              }
+              productDetailsParamsList.add(productDetailsParams.build());
+            }
+            BillingFlowParams billingFlowParams = BillingFlowParams
+              .newBuilder()
+              .setProductDetailsParamsList(productDetailsParamsList)
+              .build();
+            // Launch the billing flow
+            BillingResult billingResult2 = billingClient.launchBillingFlow(
+              getActivity(),
+              billingFlowParams
+            );
+            Log.i(
+              "NativePurchases",
+              "onProductDetailsResponse2" + billingResult2
+            );
           }
-          BillingFlowParams billingFlowParams = BillingFlowParams
-            .newBuilder()
-            .setProductDetailsParamsList(productDetailsParamsList)
-            .build();
-          // Launch the billing flow
-          BillingResult billingResult2 = billingClient.launchBillingFlow(
-            getActivity(),
-            billingFlowParams
-          );
-          Log.i(
-            "NativePurchases",
-            "onProductDetailsResponse2" + billingResult2
-          );
         }
-      }
-    );
+      );
+    } catch (Exception e) {
+      billingClient.endConnection();
+      billingClient = null;
+      call.reject(e.getMessage());
+    }
   }
 
   @PluginMethod
@@ -283,7 +289,9 @@ public class NativePurchasesPlugin extends Plugin {
       call.reject("planIdentifier cannot be empty if productType is subs");
       return;
     }
-    if (productIdentifiersArray == null || productIdentifiersArray.length() == 0) {
+    if (
+      productIdentifiersArray == null || productIdentifiersArray.length() == 0
+    ) {
       call.reject("productIdentifiers array missing");
       return;
     }
@@ -319,109 +327,117 @@ public class NativePurchasesPlugin extends Plugin {
       .setProductList(productList)
       .build();
     this.initBillingClient(call);
-    billingClient.queryProductDetailsAsync(
-      params,
-      new ProductDetailsResponseListener() {
-        public void onProductDetailsResponse(
-          BillingResult billingResult,
-          List<ProductDetails> productDetailsList
-        ) {
-          if (productDetailsList.size() == 0) {
+    try {
+      billingClient.queryProductDetailsAsync(
+        params,
+        new ProductDetailsResponseListener() {
+          public void onProductDetailsResponse(
+            BillingResult billingResult,
+            List<ProductDetails> productDetailsList
+          ) {
+            if (productDetailsList.size() == 0) {
+              billingClient.endConnection();
+              billingClient = null;
+              call.reject("Product not found");
+              return;
+            }
+            Log.i(
+              "NativePurchases",
+              "onProductDetailsResponse" + billingResult + productDetailsList
+            );
+            // Process the result
+            JSObject ret = new JSObject();
+            JSONArray products = new JSONArray();
+            Number productIdIndex = 0;
+            for (ProductDetails productDetails : productDetailsList) {
+              JSObject product = new JSObject();
+              product.put("identifier", productDetails.getProductId());
+              product.put("title", productDetails.getTitle());
+              product.put("description", productDetails.getDescription());
+              if (productType.equals("inapp")) {
+                product.put(
+                  "price",
+                  productDetails
+                    .getOneTimePurchaseOfferDetails()
+                    .getPriceAmountMicros() /
+                  1000000.0
+                );
+                product.put(
+                  "priceString",
+                  productDetails
+                    .getOneTimePurchaseOfferDetails()
+                    .getFormattedPrice()
+                );
+                product.put(
+                  "currencyCode",
+                  productDetails
+                    .getOneTimePurchaseOfferDetails()
+                    .getPriceCurrencyCode()
+                );
+              } else {
+                // productIdIndex is used to get the correct SubscriptionOfferDetails by productIdentifiersArray index and increment it
+                String subscriptionOfferIdentifier = productIdentifiers.get(
+                  productIdIndex.intValue()
+                );
+                productIdIndex = productIdIndex.intValue() + 1;
+                // get the SubscriptionOfferDetails who match the subscriptionOfferIdentifier
+                ProductDetails.SubscriptionOfferDetails selectedOfferDetails =
+                  null;
+                for (ProductDetails.SubscriptionOfferDetails offerDetails : productDetails.getSubscriptionOfferDetails()) {
+                  if (
+                    offerDetails
+                      .getOfferId()
+                      .equals(subscriptionOfferIdentifier)
+                  ) {
+                    selectedOfferDetails = offerDetails;
+                    break;
+                  }
+                }
+                if (selectedOfferDetails == null) {
+                  selectedOfferDetails =
+                    productDetails.getSubscriptionOfferDetails().get(0);
+                }
+                product.put(
+                  "price",
+                  selectedOfferDetails
+                    .getPricingPhases()
+                    .getPricingPhaseList()
+                    .get(0)
+                    .getPriceAmountMicros() /
+                  1000000.0
+                );
+                product.put(
+                  "priceString",
+                  selectedOfferDetails
+                    .getPricingPhases()
+                    .getPricingPhaseList()
+                    .get(0)
+                    .getFormattedPrice()
+                );
+                product.put(
+                  "currencyCode",
+                  selectedOfferDetails
+                    .getPricingPhases()
+                    .getPricingPhaseList()
+                    .get(0)
+                    .getPriceCurrencyCode()
+                );
+              }
+
+              product.put("isFamilyShareable", false);
+              products.put(product);
+            }
+            ret.put("products", products);
             billingClient.endConnection();
             billingClient = null;
-            call.reject("Product not found");
-            return;
+            call.resolve(ret);
           }
-          Log.i(
-            "NativePurchases",
-            "onProductDetailsResponse" + billingResult + productDetailsList
-          );
-          // Process the result
-          JSObject ret = new JSObject();
-          JSONArray products = new JSONArray();
-          Number productIdIndex = 0;
-          for (ProductDetails productDetails : productDetailsList) {
-            JSObject product = new JSObject();
-            product.put("identifier", productDetails.getProductId());
-            product.put("title", productDetails.getTitle());
-            product.put("description", productDetails.getDescription());
-            if (productType.equals("inapp")) {
-              product.put(
-                "price",
-                productDetails
-                  .getOneTimePurchaseOfferDetails()
-                  .getPriceAmountMicros() /
-                1000000.0
-              );
-              product.put(
-                "priceString",
-                productDetails
-                  .getOneTimePurchaseOfferDetails()
-                  .getFormattedPrice()
-              );
-              product.put(
-                "currencyCode",
-                productDetails
-                  .getOneTimePurchaseOfferDetails()
-                  .getPriceCurrencyCode()
-              );
-            } else {
-              // productIdIndex is used to get the correct SubscriptionOfferDetails by productIdentifiersArray index and increment it
-              String subscriptionOfferIdentifier = productIdentifiers.get(
-                productIdIndex.intValue()
-              );
-              productIdIndex = productIdIndex.intValue() + 1;
-              // get the SubscriptionOfferDetails who match the subscriptionOfferIdentifier
-              ProductDetails.SubscriptionOfferDetails selectedOfferDetails =
-                null;
-              for (ProductDetails.SubscriptionOfferDetails offerDetails : productDetails.getSubscriptionOfferDetails()) {
-                if (
-                  offerDetails.getOfferId().equals(subscriptionOfferIdentifier)
-                ) {
-                  selectedOfferDetails = offerDetails;
-                  break;
-                }
-              }
-              if (selectedOfferDetails == null) {
-                selectedOfferDetails =
-                  productDetails.getSubscriptionOfferDetails().get(0);
-              }
-              product.put(
-                "price",
-                selectedOfferDetails
-                  .getPricingPhases()
-                  .getPricingPhaseList()
-                  .get(0)
-                  .getPriceAmountMicros() /
-                1000000.0
-              );
-              product.put(
-                "priceString",
-                selectedOfferDetails
-                  .getPricingPhases()
-                  .getPricingPhaseList()
-                  .get(0)
-                  .getFormattedPrice()
-              );
-              product.put(
-                "currencyCode",
-                selectedOfferDetails
-                  .getPricingPhases()
-                  .getPricingPhaseList()
-                  .get(0)
-                  .getPriceCurrencyCode()
-              );
-            }
-
-            product.put("isFamilyShareable", false);
-            products.put(product);
-          }
-          ret.put("products", products);
-          billingClient.endConnection();
-          billingClient = null;
-          call.resolve(ret);
         }
-      }
-    );
+      );
+    } catch (Exception e) {
+      billingClient.endConnection();
+      billingClient = null;
+      call.reject(e.getMessage());
+    }
   }
 }
