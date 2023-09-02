@@ -405,10 +405,10 @@ public class NativePurchasesPlugin extends Plugin {
             Number productIdIndex = 0;
             for (ProductDetails productDetails : productDetailsList) {
               JSObject product = new JSObject();
-              product.put("identifier", productDetails.getProductId());
               product.put("title", productDetails.getName());
               product.put("description", productDetails.getDescription());
               if (productType.equals("inapp")) {
+                product.put("identifier", productDetails.getProductId());
                 product.put(
                   "price",
                   productDetails
@@ -451,6 +451,8 @@ public class NativePurchasesPlugin extends Plugin {
                   selectedOfferDetails =
                     productDetails.getSubscriptionOfferDetails().get(0);
                 }
+                product.put("planIdentifier", productDetails.getProductId());
+                product.put("identifier", selectedOfferDetails.getBasePlanId());
                 product.put(
                   "price",
                   selectedOfferDetails
