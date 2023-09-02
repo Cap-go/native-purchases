@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.36](https://github.com/Cap-go/native-purchases/compare/0.0.35...0.0.36) (2023-09-02)
+
+
+### Bug Fixes
+
+* android planIdentifier and identifier ([bfd842c](https://github.com/Cap-go/native-purchases/commit/bfd842c67c46d6db2bf4b50584dbb6b330a432e8))
+
 ### [0.0.35](https://github.com/Cap-go/native-purchases/compare/0.0.34...0.0.35) (2023-09-01)
 
 
