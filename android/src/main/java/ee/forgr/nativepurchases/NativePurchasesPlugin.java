@@ -253,7 +253,7 @@ public class NativePurchasesPlugin extends Plugin {
     ImmutableList<QueryProductDetailsParams.Product> productList = ImmutableList.of(
       QueryProductDetailsParams.Product
         .newBuilder()
-        .setProductId(productType.equals("subs") ? planIdentifier : productIdentifier)
+        .setProductId(productType.equals("inapp") ? productIdentifier : planIdentifier)
         .setProductType(
           productType.equals("inapp")
             ? BillingClient.ProductType.INAPP
@@ -290,7 +290,7 @@ public class NativePurchasesPlugin extends Plugin {
                 ProductDetails.SubscriptionOfferDetails selectedOfferDetails =
                   null;
                 for (ProductDetails.SubscriptionOfferDetails offerDetails : productDetailsItem.getSubscriptionOfferDetails()) {
-                  if (offerDetails.getOfferId().equals(productIdentifier)) {
+                  if (offerDetails.getBasePlanId().equals(planIdentifier)) {
                     selectedOfferDetails = offerDetails;
                     break;
                   }
