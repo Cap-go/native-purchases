@@ -376,15 +376,14 @@ public class NativePurchasesPlugin extends Plugin {
     ) {
       for (Purchase purchase : purchases) {
         if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
-            if (purchase.isAcknowledged()) {
-              ConsumeParams consumeParams = ConsumeParams
-                      .newBuilder()
-                      .setPurchaseToken(purchase.getPurchaseToken())
-                      .build();
-              billingClient.consumeAsync(consumeParams, this::onConsumeResponse);
-            } else {
-              acknowledgePurchase(purchase.getPurchaseToken());
-            }
+          if (purchase.isAcknowledged()) {
+            ConsumeParams consumeParams = ConsumeParams
+              .newBuilder()
+              .setPurchaseToken(purchase.getPurchaseToken())
+              .build();
+            billingClient.consumeAsync(consumeParams, this::onConsumeResponse);
+          } else {
+            acknowledgePurchase(purchase.getPurchaseToken());
           }
         }
       }
