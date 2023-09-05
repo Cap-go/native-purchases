@@ -8,12 +8,12 @@ import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.ConsumeParams;
-import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.ProductDetails;
 import com.android.billingclient.api.ProductDetailsResponseListener;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.QueryProductDetailsParams;
+import com.android.billingclient.api.QueryPurchasesParams;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -97,6 +97,11 @@ public class NativePurchasesPlugin extends Plugin {
   }
 
   private void handlePurchase(Purchase purchase, PluginCall purchaseCall) {
+    Log.i(NativePurchasesPlugin.TAG, "handlePurchase" + purchase);
+    Log.i(
+      NativePurchasesPlugin.TAG,
+      "getPurchaseState" + purchase.getPurchaseState()
+    );
     if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
       // Grant entitlement to the user, then acknowledge the purchase
       //     if sub then acknowledgePurchase
@@ -106,22 +111,7 @@ public class NativePurchasesPlugin extends Plugin {
           .newBuilder()
           .setPurchaseToken(purchase.getPurchaseToken())
           .build();
-        billingClient.consumeAsync(
-          consumeParams,
-          new ConsumeResponseListener() {
-            @Override
-            public void onConsumeResponse(
-              BillingResult billingResult,
-              String purchaseToken
-            ) {
-              // Handle the result
-              Log.i(
-                NativePurchasesPlugin.TAG,
-                "onConsumeResponse" + billingResult + purchaseToken
-              );
-            }
-          }
-        );
+        billingClient.consumeAsync(consumeParams, this::onConsumeResponse);
       } else {
         acknowledgePurchase(purchase.getPurchaseToken());
       }
@@ -357,10 +347,85 @@ public class NativePurchasesPlugin extends Plugin {
     }
   }
 
+  private void processUnfinishedPurchases() {
+    QueryPurchasesParams queryInAppPurchasesParams = QueryPurchasesParams
+      .newBuilder()
+      .setProductType(BillingClient.ProductType.INAPP)
+      .build();
+    billingClient.queryPurchasesAsync(
+      queryInAppPurchasesParams,
+      this::handlePurchases
+    );
+
+    QueryPurchasesParams querySubscriptionsParams = QueryPurchasesParams
+      .newBuilder()
+      .setProductType(BillingClient.ProductType.SUBS)
+      .build();
+    billingClient.queryPurchasesAsync(
+      querySubscriptionsParams,
+      this::handlePurchases
+    );
+  }
+
+  private void handlePurchases(
+    BillingResult billingResult,
+    List<Purchase> purchases
+  ) {
+    if (
+      billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK
+    ) {
+      for (Purchase purchase : purchases) {
+        if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
+          if (!purchase.isAcknowledged()) {
+            if (purchase.getSkus().contains(BillingClient.ProductType.SUBS)) {
+              // Acknowledge subscription purchase
+              acknowledgePurchase(purchase.getPurchaseToken());
+            } else if (
+              purchase.getSkus().contains(BillingClient.ProductType.INAPP)
+            ) {
+              // Consume in-app purchase
+              ConsumeParams consumeParams = ConsumeParams
+                .newBuilder()
+                .setPurchaseToken(purchase.getPurchaseToken())
+                .build();
+              billingClient.consumeAsync(
+                consumeParams,
+                this::onConsumeResponse
+              );
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private void onConsumeResponse(
+    BillingResult billingResult,
+    String purchaseToken
+  ) {
+    if (
+      billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK
+    ) {
+      // Handle the success of the consume operation.
+      // For example, you can update the UI to reflect that the item has been consumed.
+      Log.i(
+        NativePurchasesPlugin.TAG,
+        "onConsumeResponse OK " + billingResult + purchaseToken
+      );
+    } else {
+      // Handle error responses.
+      Log.i(
+        NativePurchasesPlugin.TAG,
+        "onConsumeResponse OTHER " + billingResult + purchaseToken
+      );
+    }
+  }
+
   @PluginMethod
   public void restorePurchases(PluginCall call) {
     Log.d(NativePurchasesPlugin.TAG, "restorePurchases");
     this.initBillingClient(null);
+    this.processUnfinishedPurchases();
     call.resolve();
   }
 
