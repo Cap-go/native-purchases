@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.41](https://github.com/Cap-go/native-purchases/compare/0.0.40...0.0.41) (2023-09-05)
+
+
+### Bug Fixes
+
+* auto consume old product ([f6f8d14](https://github.com/Cap-go/native-purchases/commit/f6f8d147fdfe801e1add5d57a298730c28f76d23))
+
 ### [0.0.40](https://github.com/Cap-go/native-purchases/compare/0.0.39...0.0.40) (2023-09-05)
 
 
