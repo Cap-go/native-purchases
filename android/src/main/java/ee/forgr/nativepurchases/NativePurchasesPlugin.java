@@ -376,22 +376,14 @@ public class NativePurchasesPlugin extends Plugin {
     ) {
       for (Purchase purchase : purchases) {
         if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
-          if (!purchase.isAcknowledged()) {
-            if (purchase.getSkus().contains(BillingClient.ProductType.SUBS)) {
-              // Acknowledge subscription purchase
-              acknowledgePurchase(purchase.getPurchaseToken());
-            } else if (
-              purchase.getSkus().contains(BillingClient.ProductType.INAPP)
-            ) {
-              // Consume in-app purchase
+            if (purchase.isAcknowledged()) {
               ConsumeParams consumeParams = ConsumeParams
-                .newBuilder()
-                .setPurchaseToken(purchase.getPurchaseToken())
-                .build();
-              billingClient.consumeAsync(
-                consumeParams,
-                this::onConsumeResponse
-              );
+                      .newBuilder()
+                      .setPurchaseToken(purchase.getPurchaseToken())
+                      .build();
+              billingClient.consumeAsync(consumeParams, this::onConsumeResponse);
+            } else {
+              acknowledgePurchase(purchase.getPurchaseToken());
             }
           }
         }
