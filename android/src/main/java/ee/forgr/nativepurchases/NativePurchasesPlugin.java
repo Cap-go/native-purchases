@@ -7,14 +7,13 @@ import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.BillingResult;
+import com.android.billingclient.api.ConsumeParams;
+import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.ProductDetails;
 import com.android.billingclient.api.ProductDetailsResponseListener;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.QueryProductDetailsParams;
-import com.android.billingclient.api.SkuDetails;
-import com.android.billingclient.api.SkuDetailsParams;
-import com.android.billingclient.api.SkuDetailsResponseListener;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -22,15 +21,13 @@ import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Phaser;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.json.JSONArray;
 import org.json.JSONException;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.Phaser;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 @CapacitorPlugin(name = "NativePurchases")
 public class NativePurchasesPlugin extends Plugin {
@@ -102,7 +99,32 @@ public class NativePurchasesPlugin extends Plugin {
   private void handlePurchase(Purchase purchase, PluginCall purchaseCall) {
     if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
       // Grant entitlement to the user, then acknowledge the purchase
-      acknowledgePurchase(purchase.getPurchaseToken());
+      //     if sub then acknowledgePurchase
+      //      if one time then consumePurchase
+      if (purchase.isAcknowledged()) {
+        ConsumeParams consumeParams = ConsumeParams
+          .newBuilder()
+          .setPurchaseToken(purchase.getPurchaseToken())
+          .build();
+        billingClient.consumeAsync(
+          consumeParams,
+          new ConsumeResponseListener() {
+            @Override
+            public void onConsumeResponse(
+              BillingResult billingResult,
+              String purchaseToken
+            ) {
+              // Handle the result
+              Log.i(
+                NativePurchasesPlugin.TAG,
+                "onConsumeResponse" + billingResult + purchaseToken
+              );
+            }
+          }
+        );
+      } else {
+        acknowledgePurchase(purchase.getPurchaseToken());
+      }
 
       JSObject ret = new JSObject();
       ret.put("transactionId", purchase.getPurchaseToken());
@@ -160,7 +182,10 @@ public class NativePurchasesPlugin extends Plugin {
               BillingResult billingResult,
               List<Purchase> purchases
             ) {
-              Log.i(NativePurchasesPlugin.TAG, "onPurchasesUpdated" + billingResult);
+              Log.i(
+                NativePurchasesPlugin.TAG,
+                "onPurchasesUpdated" + billingResult
+              );
               if (
                 billingResult.getResponseCode() ==
                 BillingClient.BillingResponseCode.OK &&
@@ -172,7 +197,10 @@ public class NativePurchasesPlugin extends Plugin {
                 handlePurchase(purchases.get(0), purchaseCall);
               } else {
                 // Handle any other error codes.
-                Log.i(NativePurchasesPlugin.TAG, "onPurchasesUpdated" + billingResult);
+                Log.i(
+                  NativePurchasesPlugin.TAG,
+                  "onPurchasesUpdated" + billingResult
+                );
                 if (purchaseCall != null) {
                   purchaseCall.reject("Purchase is not purchased");
                 }
@@ -253,7 +281,9 @@ public class NativePurchasesPlugin extends Plugin {
     ImmutableList<QueryProductDetailsParams.Product> productList = ImmutableList.of(
       QueryProductDetailsParams.Product
         .newBuilder()
-        .setProductId(productType.equals("inapp") ? productIdentifier : planIdentifier)
+        .setProductId(
+          productType.equals("inapp") ? productIdentifier : planIdentifier
+        )
         .setProductType(
           productType.equals("inapp")
             ? BillingClient.ProductType.INAPP
