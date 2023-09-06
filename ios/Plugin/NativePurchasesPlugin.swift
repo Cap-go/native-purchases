@@ -82,10 +82,10 @@ public class NativePurchasesPlugin: CAPPlugin {
                 Task {
                     do {
                         try await AppStore.sync()
-                        // make finish() calls for all transactions
-                        // for transaction in AppStore.transactions {
-                        //     await transaction.finish()
-                        // }
+                        // make finish() calls for all transactions and consume all consumables
+                        for transaction in SKPaymentQueue.default().transactions {
+                            SKPaymentQueue.default().finishTransaction(transaction)
+                        }
                         call.resolve()
                     } catch {
                         call.reject(error.localizedDescription)
