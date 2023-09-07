@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.45](https://github.com/Cap-go/native-purchases/compare/0.0.44...0.0.45) (2023-09-07)
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.google.guava:guava to v31.1-jre ([a264f02](https://github.com/Cap-go/native-purchases/commit/a264f0277ffafca0e88e0fa4db2b8a4d102e8955))
+
 ### [0.0.44](https://github.com/Cap-go/native-purchases/compare/0.0.43...0.0.44) (2023-09-06)
 
 
