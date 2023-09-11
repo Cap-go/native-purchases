@@ -22,7 +22,7 @@ devDependencies:
     version: 0.3.0(eslint@7.11.0)(typescript@4.1.5)
   '@ionic/prettier-config':
     specifier: ^1.0.1
-    version: 1.0.1(prettier@2.3.0)
+    version: 1.0.1(prettier@2.8.8)
   '@ionic/swiftlint-config':
     specifier: ^1.1.2
     version: 1.1.2
@@ -30,8 +30,8 @@ devDependencies:
     specifier: ^7.11.0
     version: 7.11.0
   prettier:
-    specifier: ~2.3.0
-    version: 2.3.0
+    specifier: ~2.8.0
+    version: 2.8.8
   prettier-plugin-java:
     specifier: ~1.0.2
     version: 1.0.2
@@ -146,12 +146,12 @@ packages:
       - typescript
     dev: true
 
-  /@ionic/prettier-config@1.0.1(prettier@2.3.0):
+  /@ionic/prettier-config@1.0.1(prettier@2.8.8):
     resolution: {integrity: sha512-/v8UOW7rxkw/hvrRe/QfjlQsdjkm3sfAHoE3uqffO5BoNGijQMARrT32JT9Ei0g6KySXPyxxW+7LzPHrQmfzCw==}
     peerDependencies:
       prettier: ^2.0.0
     dependencies:
-      prettier: 2.3.0
+      prettier: 2.8.8
     dev: true
 
   /@ionic/swiftlint-config@1.1.2:
@@ -1653,8 +1653,8 @@ packages:
     hasBin: true
     dev: true
 
-  /prettier@2.3.0:
-    resolution: {integrity: sha512-kXtO4s0Lz/DW/IJ9QdWhAf7/NmPWQXkFr/r/WkR3vyI+0v8amTDxiaQSLzs8NBlytfLWX/7uQUMIW677yLKl4w==}
+  /prettier@2.8.8:
+    resolution: {integrity: sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==}
     engines: {node: '>=10.13.0'}
     hasBin: true
     dev: true
