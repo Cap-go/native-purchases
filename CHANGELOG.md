@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.50](https://github.com/Cap-go/native-purchases/compare/0.0.49...0.0.50) (2023-09-25)
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.android.tools.build:gradle to v8.1.1 ([7a9acc2](https://github.com/Cap-go/native-purchases/commit/7a9acc28fd7e3303751685a6ce4ba6fc380c2b98))
+
 ### [0.0.49](https://github.com/Cap-go/native-purchases/compare/0.0.48...0.0.49) (2023-09-18)
 
 ### [0.0.48](https://github.com/Cap-go/native-purchases/compare/0.0.47...0.0.48) (2023-09-18)
