@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.59](https://github.com/Cap-go/native-purchases/compare/0.0.58...0.0.59) (2024-05-13)
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.android.billingclient:billing to v6.2.1 ([8e40fd6](https://github.com/Cap-go/native-purchases/commit/8e40fd62009682c1416a4576b14b7ed58cc1b1e2))
+
 ### [0.0.58](https://github.com/Cap-go/native-purchases/compare/0.0.57...0.0.58) (2024-05-06)
 
 ### [0.0.57](https://github.com/Cap-go/native-purchases/compare/0.0.56...0.0.57) (2024-04-29)
