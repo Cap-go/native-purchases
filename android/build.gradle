@@ -50,7 +50,7 @@ repositories {
 
 dependencies {
     implementation "com.google.guava:guava:31.1-jre"
-    def billing_version = "6.0.1"
+    def billing_version = "6.2.1"
     implementation "com.android.billingclient:billing:$billing_version"
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':capacitor-android')
