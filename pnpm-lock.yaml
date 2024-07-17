@@ -33,8 +33,8 @@ devDependencies:
     specifier: ~2.8.0
     version: 2.8.8
   prettier-plugin-java:
-    specifier: ~1.6.0
-    version: 1.6.2
+    specifier: ~2.6.0
+    version: 2.6.4
   rimraf:
     specifier: ^3.0.2
     version: 3.0.2
@@ -116,6 +116,33 @@ packages:
       '@capacitor/core': ^5.7.0
     dependencies:
       '@capacitor/core': 5.7.6
+    dev: true
+
+  /@chevrotain/cst-dts-gen@11.0.3:
+    resolution: {integrity: sha512-BvIKpRLeS/8UbfxXxgC33xOumsacaeCKAjAeLyOn7Pcp95HiRbrpl14S+9vaZLolnbssPIUuiUd8IvgkRyt6NQ==}
+    dependencies:
+      '@chevrotain/gast': 11.0.3
+      '@chevrotain/types': 11.0.3
+      lodash-es: 4.17.21
+    dev: true
+
+  /@chevrotain/gast@11.0.3:
+    resolution: {integrity: sha512-+qNfcoNk70PyS/uxmj3li5NiECO+2YKZZQMbmjTqRI3Qchu8Hig/Q9vgkHpI3alNjr7M+a2St5pw5w5F6NL5/Q==}
+    dependencies:
+      '@chevrotain/types': 11.0.3
+      lodash-es: 4.17.21
+    dev: true
+
+  /@chevrotain/regexp-to-ast@11.0.3:
+    resolution: {integrity: sha512-1fMHaBZxLFvWI067AVbGJav1eRY7N8DDvYCTwGBiE/ytKBgP8azTdgyrKyWZ9Mfh09eHWb5PgTSO8wi7U824RA==}
+    dev: true
+
+  /@chevrotain/types@11.0.3:
+    resolution: {integrity: sha512-gsiM3G8b58kZC2HaWR50gu6Y1440cHiJ+i3JUvcp/35JchYejb2+5MVeJK0iKThYpAa/P2PYFV4hoi44HD+aHQ==}
+    dev: true
+
+  /@chevrotain/utils@11.0.3:
+    resolution: {integrity: sha512-YslZMgtJUyuMbZ+aKvfF3x1f5liK4mWNxghFRv7jqRR9C3R3fAOGTTKvxXDa2Y1s9zSbcpuO0cAxDYsc9SrXoQ==}
     dev: true
 
   /@eslint/eslintrc@0.4.3:
@@ -617,10 +644,24 @@ packages:
       supports-color: 7.2.0
     dev: true
 
-  /chevrotain@6.5.0:
-    resolution: {integrity: sha512-BwqQ/AgmKJ8jcMEjaSnfMybnKMgGTrtDKowfTP3pX4jwVy0kNjRsT/AP6h+wC3+3NC+X8X15VWBnTCQlX+wQFg==}
+  /chevrotain-allstar@0.3.1(chevrotain@11.0.3):
+    resolution: {integrity: sha512-b7g+y9A0v4mxCW1qUhf3BSVPg+/NvGErk/dOkrDaHA0nQIQGAtrOjlX//9OQtRlSCy+x9rfB5N8yC71lH1nvMw==}
+    peerDependencies:
+      chevrotain: ^11.0.0
     dependencies:
-      regexp-to-ast: 0.4.0
+      chevrotain: 11.0.3
+      lodash-es: 4.17.21
+    dev: true
+
+  /chevrotain@11.0.3:
+    resolution: {integrity: sha512-ci2iJH6LeIkvP9eJW6gpueU8cnZhv85ELY8w8WiFtNjMHA5ad6pQLaJo9mEly/9qUyCpvqX8/POVUTf18/HFdw==}
+    dependencies:
+      '@chevrotain/cst-dts-gen': 11.0.3
+      '@chevrotain/gast': 11.0.3
+      '@chevrotain/regexp-to-ast': 11.0.3
+      '@chevrotain/types': 11.0.3
+      '@chevrotain/utils': 11.0.3
+      lodash-es: 4.17.21
     dev: true
 
   /color-convert@1.9.3:
@@ -1443,10 +1484,11 @@ packages:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
     dev: true
 
-  /java-parser@2.0.2:
-    resolution: {integrity: sha512-fwv1eDYE4OIAN+XS7cD8aB7UdQyAh3Uz36ydWqemvnDKXEdLbxq7qIbvsjpSvS1NHFR+r81N7AjGcpnamjVxJw==}
+  /java-parser@2.3.2:
+    resolution: {integrity: sha512-/O42UbEHy3VVJw8W0ruHkQjW75oWvQx4QisoUDRIGir6q3/IZ4JslDMPMYEqp7LU56PYJkH5uXdQiBaCXt/Opw==}
     dependencies:
-      chevrotain: 6.5.0
+      chevrotain: 11.0.3
+      chevrotain-allstar: 0.3.1(chevrotain@11.0.3)
       lodash: 4.17.21
     dev: true
 
@@ -1513,6 +1555,10 @@ packages:
 
   /lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
+    dev: true
+
+  /lodash-es@4.17.21:
+    resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
     dev: true
 
   /lodash.merge@4.6.2:
@@ -1683,23 +1729,23 @@ packages:
     engines: {node: '>= 0.8.0'}
     dev: true
 
-  /prettier-plugin-java@1.6.2:
-    resolution: {integrity: sha512-oVIUOkx50eb9skdRtEIU7MJUsizQ1ZocgXR1w1o8AnieNGpuPI/2pWnpjtbBm9wUG1dHtBGU8cVIr8h+xgzQIg==}
+  /prettier-plugin-java@2.6.4:
+    resolution: {integrity: sha512-57iGIFM4xSCqzHc4G6RLeC0DJk+i6Vd1JDj5xcIe7GsWZjRSl8WWkpL0f4BB0gZ+jDZ8R1uJaxtnMgnRtzjLDQ==}
     dependencies:
-      java-parser: 2.0.2
+      java-parser: 2.3.2
       lodash: 4.17.21
-      prettier: 2.3.1
-    dev: true
-
-  /prettier@2.3.1:
-    resolution: {integrity: sha512-p+vNbgpLjif/+D+DwAZAbndtRrR0md0MwfmOVN9N+2RgyACMT+7tfaRnT+WDPkqnuVwleyuBIG2XBxKDme3hPA==}
-    engines: {node: '>=10.13.0'}
-    hasBin: true
+      prettier: 3.2.5
     dev: true
 
   /prettier@2.8.8:
     resolution: {integrity: sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==}
     engines: {node: '>=10.13.0'}
+    hasBin: true
+    dev: true
+
+  /prettier@3.2.5:
+    resolution: {integrity: sha512-3/GWa9aOC0YeD7LUfvOG2NiDyhOWRvt1k+rcKhOuYnMY24iiCphgneUfJDyFXd6rZCAnuLBv6UeAULtrhT/F4A==}
+    engines: {node: '>=14'}
     hasBin: true
     dev: true
 
@@ -1715,10 +1761,6 @@ packages:
 
   /queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
-    dev: true
-
-  /regexp-to-ast@0.4.0:
-    resolution: {integrity: sha512-4qf/7IsIKfSNHQXSwial1IFmfM1Cc/whNBQqRwe0V2stPe7KmN1U0tWQiIx6JiirgSrisjE0eECdNf7Tav1Ntw==}
     dev: true
 
   /regexp.prototype.flags@1.5.0:
