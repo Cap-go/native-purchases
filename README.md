@@ -11,7 +11,7 @@ In-app Purchases Made Easy
 ## Install
 
 ```bash
-npm install native-purchases
+npm install @capgo/native-purchases
 npx cap sync
 ```
 
