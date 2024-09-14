@@ -5,12 +5,14 @@
 <h2><a href="https://capgo.app/">Check out: Capgo — live updates for capacitor</a></h2>
 </div>
 
-In-app Purchases Made Easy
+## In-app Purchases Made Easy
+
+This plugin allows you to implement in-app purchases and subscriptions in your Capacitor app using native APIs.
 
 ## Install
 
 ```bash
-npm install native-purchases
+npm install @capgo/native-purchases
 npx cap sync
 ```
 
@@ -22,6 +24,195 @@ Add this to manifest
 <uses-permission android:name="com.android.vending.BILLING" />
 ```
 
+## Usage
+
+Import the plugin in your TypeScript file:
+
+```typescript
+import { NativePurchases } from '@capgo/native-purchases';
+```
+
+### Check if billing is supported
+
+Before attempting to make purchases, check if billing is supported on the device:
+We only support Storekit 2 on iOS (iOS 15+) and google play on Android
+
+```typescript
+const checkBillingSupport = async () => {
+  try {
+    const { isBillingSupported } = await NativePurchases.isBillingSupported();
+    if (isBillingSupported) {
+      console.log('Billing is supported on this device');
+    } else {
+      console.log('Billing is not supported on this device');
+    }
+  } catch (error) {
+    console.error('Error checking billing support:', error);
+  }
+};
+```
+
+### Get available products
+
+Retrieve information about available products:
+
+```typescript
+const getAvailableProducts = async () => {
+  try {
+    const { products } = await NativePurchases.getProducts({
+      productIdentifiers: ['product_id_1', 'product_id_2'],
+      productType: PURCHASE_TYPE.INAPP // or PURCHASE_TYPE.SUBS for subscriptions
+    });
+    console.log('Available products:', products);
+  } catch (error) {
+    console.error('Error getting products:', error);
+  }
+};
+```
+
+### Purchase a product
+
+To initiate a purchase:
+
+```typescript
+const purchaseProduct = async (productId: string) => {
+  try {
+    const transaction = await NativePurchases.purchaseProduct({
+      productIdentifier: productId,
+      productType: PURCHASE_TYPE.INAPP // or PURCHASE_TYPE.SUBS for subscriptions
+    });
+    console.log('Purchase successful:', transaction);
+    // Handle the successful purchase (e.g., unlock content, update UI)
+  } catch (error) {
+    console.error('Purchase failed:', error);
+  }
+};
+```
+
+### Restore purchases
+
+To restore previously purchased products:
+
+```typescript
+const restorePurchases = async () => {
+  try {
+    const { customerInfo } = await NativePurchases.restorePurchases();
+    console.log('Restored purchases:', customerInfo);
+    // Update your app's state based on the restored purchases
+  } catch (error) {
+    console.error('Failed to restore purchases:', error);
+  }
+};
+```
+
+## Example: Implementing a simple store
+
+Here's a basic example of how you might implement a simple store in your app:
+
+```typescript
+import { Capacitor } from '@capacitor/core';
+import { NativePurchases, PURCHASE_TYPE, Product } from '@capgo/native-purchases';
+
+class Store {
+  private products: Product[] = [];
+
+  async initialize() {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        await this.checkBillingSupport();
+        await this.loadProducts();
+      } catch (error) {
+        console.error('Store initialization failed:', error);
+      }
+    }
+  }
+
+  private async checkBillingSupport() {
+    const { isBillingSupported } = await NativePurchases.isBillingSupported();
+    if (!isBillingSupported) {
+      throw new Error('Billing is not supported on this device');
+    }
+  }
+
+  private async loadProducts() {
+    const productIds = ['premium_subscription', 'remove_ads', 'coin_pack'];
+    const { products } = await NativePurchases.getProducts({
+      productIdentifiers: productIds,
+      productType: PURCHASE_TYPE.INAPP
+    });
+    this.products = products;
+  }
+
+  getProducts() {
+    return this.products;
+  }
+
+  async purchaseProduct(productId: string) {
+    try {
+      const transaction = await NativePurchases.purchaseProduct({
+        productIdentifier: productId,
+        productType: PURCHASE_TYPE.INAPP
+      });
+      console.log('Purchase successful:', transaction);
+      // Handle the successful purchase
+      return transaction;
+    } catch (error) {
+      console.error('Purchase failed:', error);
+      throw error;
+    }
+  }
+
+  async restorePurchases() {
+    try {
+      const { customerInfo } = await NativePurchases.restorePurchases();
+      console.log('Restored purchases:', customerInfo);
+      // Update app state based on restored purchases
+      return customerInfo;
+    } catch (error) {
+      console.error('Failed to restore purchases:', error);
+      throw error;
+    }
+  }
+}
+
+// Usage
+const store = new Store();
+await store.initialize();
+
+// Display products
+const products = store.getProducts();
+console.log('Available products:', products);
+
+// Purchase a product
+try {
+  await store.purchaseProduct('premium_subscription');
+  console.log('Purchase completed successfully');
+} catch (error) {
+  console.error('Purchase failed:', error);
+}
+
+// Restore purchases
+try {
+  await store.restorePurchases();
+  console.log('Purchases restored successfully');
+} catch (error) {
+  console.error('Failed to restore purchases:', error);
+}
+```
+
+This example provides a basic structure for initializing the store, loading products, making purchases, and restoring previous purchases. You'll need to adapt this to fit your specific app's needs, handle UI updates, and implement proper error handling and user feedback.
+
+## Backend Validation
+
+It's crucial to validate receipts on your server to ensure the integrity of purchases. Here's an example of how to implement backend validation using a Cloudflare Worker:
+
+Cloudflare Worker Setup
+Create a new Cloudflare Worker and paste the provided code. in folder `validator`
+Set up the following environment variables in your Cloudflare Worker:
+APPLE_SECRET: Your App Store Connect shared secret
+GOOGLE_SERVICE_ACCOUNT: Your Google Service Account JSON (as a string)
+GOOGLE_PACKAGE_NAME: Your Android app's package name
+
 ## API
 
 <docgen-index>
@@ -29,6 +220,7 @@ Add this to manifest
 * [`restorePurchases()`](#restorepurchases)
 * [`purchaseProduct(...)`](#purchaseproduct)
 * [`getProducts(...)`](#getproducts)
+* [`getProduct(...)`](#getproduct)
 * [`isBillingSupported()`](#isbillingsupported)
 * [`getPluginVersion()`](#getpluginversion)
 * [Interfaces](#interfaces)
@@ -72,14 +264,31 @@ Started purchase process for the given product.
 ### getProducts(...)
 
 ```typescript
-getProducts(options: { productIdentifiers: string[]; planIdentifier?: string; productType?: PURCHASE_TYPE; }) => any
+getProducts(options: { productIdentifiers: string[]; productType?: PURCHASE_TYPE; }) => any
 ```
 
 Gets the product info associated with a list of product identifiers.
 
-| Param         | Type                                                                                                                        | Description                                                    |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| **`options`** | <code>{ productIdentifiers: {}; planIdentifier?: string; productType?: <a href="#purchase_type">PURCHASE_TYPE</a>; }</code> | - The product identifiers you wish to retrieve information for |
+| Param         | Type                                                                                               | Description                                                    |
+| ------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| **`options`** | <code>{ productIdentifiers: {}; productType?: <a href="#purchase_type">PURCHASE_TYPE</a>; }</code> | - The product identifiers you wish to retrieve information for |
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### getProduct(...)
+
+```typescript
+getProduct(options: { productIdentifier: string; productType?: PURCHASE_TYPE; }) => any
+```
+
+Gets the product info for a single product identifier.
+
+| Param         | Type                                                                                                  | Description                                                   |
+| ------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| **`options`** | <code>{ productIdentifier: string; productType?: <a href="#purchase_type">PURCHASE_TYPE</a>; }</code> | - The product identifier you wish to retrieve information for |
 
 **Returns:** <code>any</code>
 
