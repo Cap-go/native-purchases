@@ -40,7 +40,10 @@ public class NativePurchasesPlugin: CAPPlugin {
             Task {
                 do {
                     let products = try await Product.products(for: [productIdentifier])
-                    let product = products[0]
+                    guard let product = products.first else {
+                        call.reject("Cannot find product for id \(productIdentifier)")
+                        return
+                    }
                     var purchaseOptions = Set<Product.PurchaseOption>()
                     purchaseOptions.insert(Product.PurchaseOption.quantity(quantity))
                     let result = try await product.purchase(options: purchaseOptions)

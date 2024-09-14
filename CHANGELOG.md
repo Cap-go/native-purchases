@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.67](https://github.com/Cap-go/native-purchases/compare/0.0.66...0.0.67) (2024-09-08)
+
+
+### Bug Fixes
+
+* **IOS:** hard-coded array index ([254726e](https://github.com/Cap-go/native-purchases/commit/254726e5f2fca94cf438a2cc3662b3d7524dda8a))
+
+### [0.0.66](https://github.com/Cap-go/native-purchases/compare/0.0.65...0.0.66) (2024-09-05)
+
+### [0.0.65](https://github.com/Cap-go/native-purchases/compare/0.0.64...0.0.65) (2024-09-05)
+
+### [0.0.64](https://github.com/Cap-go/native-purchases/compare/0.0.63...0.0.64) (2024-07-17)
+
+### [0.0.63](https://github.com/Cap-go/native-purchases/compare/0.0.62...0.0.63) (2024-07-17)
+
+
+### Bug Fixes
+
+* add autofix ([de04528](https://github.com/Cap-go/native-purchases/commit/de04528497a7d9288f55f02fdb7ff42b6c14091f))
+
 ### [0.0.62](https://github.com/Cap-go/native-purchases/compare/0.0.61...0.0.62) (2024-07-15)
 
 ### [0.0.61](https://github.com/Cap-go/native-purchases/compare/0.0.60...0.0.61) (2024-07-15)
