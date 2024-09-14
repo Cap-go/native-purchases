@@ -21,6 +21,7 @@ import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Phaser;
@@ -420,164 +421,84 @@ public class NativePurchasesPlugin extends Plugin {
     call.resolve();
   }
 
+  private void queryProductDetails(List<String> productIdentifiers, String productType, PluginCall call) {
+    List<QueryProductDetailsParams.Product> productList = new ArrayList<>();
+    for (String productIdentifier : productIdentifiers) {
+        productList.add(
+            QueryProductDetailsParams.Product.newBuilder()
+                .setProductId(productIdentifier)
+                .setProductType(productType.equals("inapp") ? BillingClient.ProductType.INAPP : BillingClient.ProductType.SUBS)
+                .build()
+        );
+    }
+    QueryProductDetailsParams params = QueryProductDetailsParams.newBuilder()
+        .setProductList(productList)
+        .build();
+    this.initBillingClient(call);
+    try {
+        billingClient.queryProductDetailsAsync(params, new ProductDetailsResponseListener() {
+            public void onProductDetailsResponse(BillingResult billingResult, List<ProductDetails> productDetailsList) {
+                if (productDetailsList.size() == 0) {
+                    closeBillingClient();
+                    call.reject("Product not found");
+                    return;
+                }
+                JSONArray products = new JSONArray();
+                for (ProductDetails productDetails : productDetailsList) {
+                    JSObject product = new JSObject();
+                    product.put("title", productDetails.getName());
+                    product.put("description", productDetails.getDescription());
+                    if (productType.equals("inapp")) {
+                        product.put("identifier", productDetails.getProductId());
+                        product.put("price", productDetails.getOneTimePurchaseOfferDetails().getPriceAmountMicros() / 1000000.0);
+                        product.put("priceString", productDetails.getOneTimePurchaseOfferDetails().getFormattedPrice());
+                        product.put("currencyCode", productDetails.getOneTimePurchaseOfferDetails().getPriceCurrencyCode());
+                    } else {
+                        ProductDetails.SubscriptionOfferDetails selectedOfferDetails = productDetails.getSubscriptionOfferDetails().get(0);
+                        product.put("planIdentifier", productDetails.getProductId());
+                        product.put("identifier", selectedOfferDetails.getBasePlanId());
+                        product.put("price", selectedOfferDetails.getPricingPhases().getPricingPhaseList().get(0).getPriceAmountMicros() / 1000000.0);
+                        product.put("priceString", selectedOfferDetails.getPricingPhases().getPricingPhaseList().get(0).getFormattedPrice());
+                        product.put("currencyCode", selectedOfferDetails.getPricingPhases().getPricingPhaseList().get(0).getPriceCurrencyCode());
+                    }
+                    product.put("isFamilyShareable", false);
+                    products.put(product);
+                }
+                JSObject ret = new JSObject();
+                ret.put("products", products);
+                closeBillingClient();
+                call.resolve(ret);
+            }
+        });
+    } catch (Exception e) {
+        closeBillingClient();
+        call.reject(e.getMessage());
+    }
+  }
+
   @PluginMethod
   public void getProducts(PluginCall call) {
     JSONArray productIdentifiersArray = call.getArray("productIdentifiers");
-    String planIdentifier = call.getString("planIdentifier");
     String productType = call.getString("productType", "inapp");
-    if (productType.equals("subs") && planIdentifier.isEmpty()) {
-      // Handle error: no planIdentifier with productType subs
-      call.reject("planIdentifier cannot be empty if productType is subs");
-      return;
-    }
-    if (
-      productIdentifiersArray == null || productIdentifiersArray.length() == 0
-    ) {
-      call.reject("productIdentifiers array missing");
-      return;
+    if (productIdentifiersArray == null || productIdentifiersArray.length() == 0) {
+        call.reject("productIdentifiers array missing");
+        return;
     }
     List<String> productIdentifiers = new ArrayList<>();
-
     for (int i = 0; i < productIdentifiersArray.length(); i++) {
-      try {
-        productIdentifiers.add(productIdentifiersArray.getString(i));
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
+        productIdentifiers.add(productIdentifiersArray.optString(i, ""));
     }
+    queryProductDetails(productIdentifiers, productType, call);
+  }
 
-    Log.d(NativePurchasesPlugin.TAG, "getProducts: " + productIdentifiers);
-    List<QueryProductDetailsParams.Product> productList = new ArrayList<>();
-    for (String productIdentifier : productIdentifiers) {
-      productList.add(
-        QueryProductDetailsParams.Product
-          .newBuilder()
-          .setProductId(
-            productType.equals("inapp") ? productIdentifier : planIdentifier
-          )
-          .setProductType(
-            productType.equals("inapp")
-              ? BillingClient.ProductType.INAPP
-              : BillingClient.ProductType.SUBS
-          )
-          .build()
-      );
+  @PluginMethod
+  public void getProduct(PluginCall call) {
+    String productIdentifier = call.getString("productIdentifier");
+    String productType = call.getString("productType", "inapp");
+    if (productIdentifier.isEmpty()) {
+        call.reject("productIdentifier is empty");
+        return;
     }
-    QueryProductDetailsParams params = QueryProductDetailsParams
-      .newBuilder()
-      .setProductList(productList)
-      .build();
-    this.initBillingClient(call);
-    try {
-      billingClient.queryProductDetailsAsync(
-        params,
-        new ProductDetailsResponseListener() {
-          public void onProductDetailsResponse(
-            BillingResult billingResult,
-            List<ProductDetails> productDetailsList
-          ) {
-            if (productDetailsList.size() == 0) {
-              closeBillingClient();
-              call.reject("Product not found");
-              return;
-            }
-            Log.i(
-              NativePurchasesPlugin.TAG,
-              "onProductDetailsResponse" + billingResult + productDetailsList
-            );
-            // Process the result
-            JSObject ret = new JSObject();
-            JSONArray products = new JSONArray();
-            Number productIdIndex = 0;
-            for (ProductDetails productDetails : productDetailsList) {
-              JSObject product = new JSObject();
-              product.put("title", productDetails.getName());
-              product.put("description", productDetails.getDescription());
-              if (productType.equals("inapp")) {
-                product.put("identifier", productDetails.getProductId());
-                product.put(
-                  "price",
-                  productDetails
-                    .getOneTimePurchaseOfferDetails()
-                    .getPriceAmountMicros() /
-                  1000000.0
-                );
-                product.put(
-                  "priceString",
-                  productDetails
-                    .getOneTimePurchaseOfferDetails()
-                    .getFormattedPrice()
-                );
-                product.put(
-                  "currencyCode",
-                  productDetails
-                    .getOneTimePurchaseOfferDetails()
-                    .getPriceCurrencyCode()
-                );
-              } else {
-                // productIdIndex is used to get the correct SubscriptionOfferDetails by productIdentifiersArray index and increment it
-                String subscriptionOfferIdentifier = productIdentifiers.get(
-                  productIdIndex.intValue()
-                );
-                productIdIndex = productIdIndex.intValue() + 1;
-                // get the SubscriptionOfferDetails who match the subscriptionOfferIdentifier
-                ProductDetails.SubscriptionOfferDetails selectedOfferDetails =
-                  null;
-                for (ProductDetails.SubscriptionOfferDetails offerDetails : productDetails.getSubscriptionOfferDetails()) {
-                  if (
-                    offerDetails
-                      .getBasePlanId()
-                      .equals(subscriptionOfferIdentifier)
-                  ) {
-                    selectedOfferDetails = offerDetails;
-                    break;
-                  }
-                }
-                if (selectedOfferDetails == null) {
-                  selectedOfferDetails =
-                    productDetails.getSubscriptionOfferDetails().get(0);
-                }
-                product.put("planIdentifier", productDetails.getProductId());
-                product.put("identifier", selectedOfferDetails.getBasePlanId());
-                product.put(
-                  "price",
-                  selectedOfferDetails
-                    .getPricingPhases()
-                    .getPricingPhaseList()
-                    .get(0)
-                    .getPriceAmountMicros() /
-                  1000000.0
-                );
-                product.put(
-                  "priceString",
-                  selectedOfferDetails
-                    .getPricingPhases()
-                    .getPricingPhaseList()
-                    .get(0)
-                    .getFormattedPrice()
-                );
-                product.put(
-                  "currencyCode",
-                  selectedOfferDetails
-                    .getPricingPhases()
-                    .getPricingPhaseList()
-                    .get(0)
-                    .getPriceCurrencyCode()
-                );
-              }
-
-              product.put("isFamilyShareable", false);
-              products.put(product);
-            }
-            ret.put("products", products);
-            closeBillingClient();
-            call.resolve(ret);
-          }
-        }
-      );
-    } catch (Exception e) {
-      closeBillingClient();
-      call.reject(e.getMessage());
-    }
+    queryProductDetails(Collections.singletonList(productIdentifier), productType, call);
   }
 }

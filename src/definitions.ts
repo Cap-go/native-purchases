@@ -335,15 +335,26 @@ export interface NativePurchasesPlugin {
    *
    * @param options - The product identifiers you wish to retrieve information for
    * @param options.productIdentifiers - Array of product identifiers
-   * @param options.planIdentifier - Only Android, the identifier of the plan you want to purchase, require for for subs.
    * @param options.productType - Only Android, the type of product, can be inapp or subs. Will use inapp by default.
    * @returns - The requested product info
    */
   getProducts(options: {
     productIdentifiers: string[];
-    planIdentifier?: string;
     productType?: PURCHASE_TYPE;
   }): Promise<{ products: Product[] }>;
+
+  /**
+   * Gets the product info for a single product identifier.
+   *
+   * @param options - The product identifier you wish to retrieve information for
+   * @param options.productIdentifier - The product identifier
+   * @param options.productType - Only Android, the type of product, can be inapp or subs. Will use inapp by default.
+   * @returns - The requested product info
+   */
+  getProduct(options: {
+    productIdentifier: string;
+    productType?: PURCHASE_TYPE;
+  }): Promise<{ product: Product }>;
 
   /**
    * Check if billing is supported for the current device.

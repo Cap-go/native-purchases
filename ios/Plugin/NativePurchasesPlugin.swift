@@ -121,4 +121,34 @@ public class NativePurchasesPlugin: CAPPlugin {
         }
     }
 
+    @objc func getProduct(_ call: CAPPluginCall) {
+        if #available(iOS 15.0, *) {
+            let productIdentifier = call.getString("productIdentifier") ?? ""
+            if productIdentifier.isEmpty {
+                call.reject("productIdentifier is empty")
+                return
+            }
+            
+            DispatchQueue.global().async {
+                Task {
+                    do {
+                        let products = try await Product.products(for: [productIdentifier])
+                        if let product = products.first {
+                            let productJson = product.dictionary
+                            call.resolve(["product": productJson])
+                        } else {
+                            call.reject("Product not found")
+                        }
+                    } catch {
+                        print(error)
+                        call.reject(error.localizedDescription)
+                    }
+                }
+            }
+        } else {
+            print("Not implemented under iOS 15")
+            call.reject("Not implemented under iOS 15")
+        }
+    }
+
 }
