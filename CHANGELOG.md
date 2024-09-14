@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.68](https://github.com/Cap-go/native-purchases/compare/0.0.67...0.0.68) (2024-09-14)
+
+
+### Features
+
+* add simple get method ([76fc8d2](https://github.com/Cap-go/native-purchases/commit/76fc8d2a7ac92d8e723a8b1e124bba4830564336))
+
 ### [0.0.67](https://github.com/Cap-go/native-purchases/compare/0.0.66...0.0.67) (2024-09-08)
 
 
