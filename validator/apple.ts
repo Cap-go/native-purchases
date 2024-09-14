@@ -10,16 +10,19 @@ interface VerifyResponse {
   };
 }
 
-export async function validateAppleReceipt(receipt: string, env: Env): Promise<VerifyResponse> {
+export async function validateAppleReceipt(
+  receipt: string,
+  env: Env
+): Promise<VerifyResponse> {
   const { APPLE_SECRET } = env;
 
-  const response = await fetch('https://buy.itunes.apple.com/verifyReceipt', {
-    method: 'POST',
+  const response = await fetch("https://buy.itunes.apple.com/verifyReceipt", {
+    method: "POST",
     body: JSON.stringify({
-      'receipt-data': receipt,
-      'password': APPLE_SECRET,
-      'exclude-old-transactions': true
-    })
+      "receipt-data": receipt,
+      password: APPLE_SECRET,
+      "exclude-old-transactions": true,
+    }),
   });
 
   const data: VerifyResponse = await response.json();
@@ -27,6 +30,6 @@ export async function validateAppleReceipt(receipt: string, env: Env): Promise<V
   if (data.status === 0) {
     return data;
   } else {
-    throw new Error('Invalid receipt');
+    throw new Error("Invalid receipt");
   }
 }
