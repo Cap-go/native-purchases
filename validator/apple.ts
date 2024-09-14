@@ -16,8 +16,11 @@ export async function validateAppleReceipt(
 ): Promise<VerifyResponse> {
   const { APPLE_SECRET } = env;
 
-  const response = await fetch("https://buy.itunes.apple.com/verifyReceipt", {
+  const response = await fetch("https://api.storekit.itunes.apple.com/inApps/v1/subscriptions/verify", {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({
       "receipt-data": receipt,
       password: APPLE_SECRET,
