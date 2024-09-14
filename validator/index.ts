@@ -4,9 +4,9 @@ import { validateAppleReceipt } from './apple';
 import { validateGoogleReceipt } from './google';
 
 export interface Env {
-  APPLE_SECRET: string;
-  GOOGLE_SERVICE_ACCOUNT: string;
-  GOOGLE_PACKAGE_NAME: string;
+  APPLE_SECRET: string; // Your Apple shared secret key
+  GOOGLE_SERVICE_ACCOUNT: string; // Your Google service account JSON key
+  GOOGLE_PACKAGE_NAME: string; // Your Google Play package name
 }
 
 const router = Router();
