@@ -35,6 +35,13 @@ export class NativePurchasesWeb
     return { products: [] };
   }
 
+  async getProduct(options: {
+    productIdentifier: string;
+  }): Promise<{ product: Product }> {
+    console.error("getProduct only mocked in web " + options);
+    return { product: {} as any };
+  }
+
   async purchaseProduct(options: {
     productIdentifier: string;
     planIdentifier: string;
