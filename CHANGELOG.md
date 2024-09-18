@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.71](https://github.com/Cap-go/native-purchases/compare/0.0.70...0.0.71) (2024-09-14)
+
+### [0.0.70](https://github.com/Cap-go/native-purchases/compare/0.0.69...0.0.70) (2024-09-14)
+
+
+### Bug Fixes
+
+* use noe deprecated endpoint ([ef9ab6f](https://github.com/Cap-go/native-purchases/commit/ef9ab6f700711b3c7fb2c060baad19e8454a9973))
+
 ### [0.0.69](https://github.com/Cap-go/native-purchases/compare/0.0.68...0.0.69) (2024-09-14)
 
 
