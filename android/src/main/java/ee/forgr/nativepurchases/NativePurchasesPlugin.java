@@ -108,8 +108,7 @@ public class NativePurchasesPlugin extends Plugin {
       //     if sub then acknowledgePurchase
       //      if one time then consumePurchase
       if (purchase.isAcknowledged()) {
-        ConsumeParams consumeParams = ConsumeParams
-          .newBuilder()
+        ConsumeParams consumeParams = ConsumeParams.newBuilder()
           .setPurchaseToken(purchase.getPurchaseToken())
           .build();
         billingClient.consumeAsync(consumeParams, this::onConsumeResponse);
@@ -139,10 +138,10 @@ public class NativePurchasesPlugin extends Plugin {
   }
 
   private void acknowledgePurchase(String purchaseToken) {
-    AcknowledgePurchaseParams acknowledgePurchaseParams = AcknowledgePurchaseParams
-      .newBuilder()
-      .setPurchaseToken(purchaseToken)
-      .build();
+    AcknowledgePurchaseParams acknowledgePurchaseParams =
+      AcknowledgePurchaseParams.newBuilder()
+        .setPurchaseToken(purchaseToken)
+        .build();
     billingClient.acknowledgePurchase(
       acknowledgePurchaseParams,
       new AcknowledgePurchaseResponseListener() {
@@ -163,46 +162,44 @@ public class NativePurchasesPlugin extends Plugin {
     closeBillingClient();
     semaphoreUp();
     CountDownLatch semaphoreReady = new CountDownLatch(1);
-    billingClient =
-      BillingClient
-        .newBuilder(getContext())
-        .setListener(
-          new PurchasesUpdatedListener() {
-            @Override
-            public void onPurchasesUpdated(
-              BillingResult billingResult,
-              List<Purchase> purchases
+    billingClient = BillingClient.newBuilder(getContext())
+      .setListener(
+        new PurchasesUpdatedListener() {
+          @Override
+          public void onPurchasesUpdated(
+            BillingResult billingResult,
+            List<Purchase> purchases
+          ) {
+            Log.i(
+              NativePurchasesPlugin.TAG,
+              "onPurchasesUpdated" + billingResult
+            );
+            if (
+              billingResult.getResponseCode() ==
+                BillingClient.BillingResponseCode.OK &&
+              purchases != null
             ) {
+              //                          for (Purchase purchase : purchases) {
+              //                              handlePurchase(purchase, purchaseCall);
+              //                          }
+              handlePurchase(purchases.get(0), purchaseCall);
+            } else {
+              // Handle any other error codes.
               Log.i(
                 NativePurchasesPlugin.TAG,
                 "onPurchasesUpdated" + billingResult
               );
-              if (
-                billingResult.getResponseCode() ==
-                BillingClient.BillingResponseCode.OK &&
-                purchases != null
-              ) {
-                //                          for (Purchase purchase : purchases) {
-                //                              handlePurchase(purchase, purchaseCall);
-                //                          }
-                handlePurchase(purchases.get(0), purchaseCall);
-              } else {
-                // Handle any other error codes.
-                Log.i(
-                  NativePurchasesPlugin.TAG,
-                  "onPurchasesUpdated" + billingResult
-                );
-                if (purchaseCall != null) {
-                  purchaseCall.reject("Purchase is not purchased");
-                }
+              if (purchaseCall != null) {
+                purchaseCall.reject("Purchase is not purchased");
               }
-              closeBillingClient();
-              return;
             }
+            closeBillingClient();
+            return;
           }
-        )
-        .enablePendingPurchases()
-        .build();
+        }
+      )
+      .enablePendingPurchases()
+      .build();
     billingClient.startConnection(
       new BillingClientStateListener() {
         @Override
@@ -269,21 +266,20 @@ public class NativePurchasesPlugin extends Plugin {
       call.reject("quantity is less than 1");
       return;
     }
-    ImmutableList<QueryProductDetailsParams.Product> productList = ImmutableList.of(
-      QueryProductDetailsParams.Product
-        .newBuilder()
-        .setProductId(
-          productType.equals("inapp") ? productIdentifier : planIdentifier
-        )
-        .setProductType(
-          productType.equals("inapp")
-            ? BillingClient.ProductType.INAPP
-            : BillingClient.ProductType.SUBS
-        )
-        .build()
-    );
-    QueryProductDetailsParams params = QueryProductDetailsParams
-      .newBuilder()
+    ImmutableList<QueryProductDetailsParams.Product> productList =
+      ImmutableList.of(
+        QueryProductDetailsParams.Product.newBuilder()
+          .setProductId(
+            productType.equals("inapp") ? productIdentifier : planIdentifier
+          )
+          .setProductType(
+            productType.equals("inapp")
+              ? BillingClient.ProductType.INAPP
+              : BillingClient.ProductType.SUBS
+          )
+          .build()
+      );
+    QueryProductDetailsParams params = QueryProductDetailsParams.newBuilder()
       .setProductList(productList)
       .build();
     this.initBillingClient(call);
@@ -301,11 +297,13 @@ public class NativePurchasesPlugin extends Plugin {
               return;
             }
             // Process the result
-            List<BillingFlowParams.ProductDetailsParams> productDetailsParamsList = new ArrayList<>();
+            List<
+              BillingFlowParams.ProductDetailsParams
+            > productDetailsParamsList = new ArrayList<>();
             for (ProductDetails productDetailsItem : productDetailsList) {
-              BillingFlowParams.ProductDetailsParams.Builder productDetailsParams = BillingFlowParams.ProductDetailsParams
-                .newBuilder()
-                .setProductDetails(productDetailsItem);
+              BillingFlowParams.ProductDetailsParams.Builder productDetailsParams =
+                BillingFlowParams.ProductDetailsParams.newBuilder()
+                  .setProductDetails(productDetailsItem);
               if (productType.equals("subs")) {
                 // list the SubscriptionOfferDetails and find the one who match the planIdentifier if not found get the first one
                 ProductDetails.SubscriptionOfferDetails selectedOfferDetails =
@@ -317,8 +315,9 @@ public class NativePurchasesPlugin extends Plugin {
                   }
                 }
                 if (selectedOfferDetails == null) {
-                  selectedOfferDetails =
-                    productDetailsItem.getSubscriptionOfferDetails().get(0);
+                  selectedOfferDetails = productDetailsItem
+                    .getSubscriptionOfferDetails()
+                    .get(0);
                 }
                 productDetailsParams.setOfferToken(
                   selectedOfferDetails.getOfferToken()
@@ -326,8 +325,7 @@ public class NativePurchasesPlugin extends Plugin {
               }
               productDetailsParamsList.add(productDetailsParams.build());
             }
-            BillingFlowParams billingFlowParams = BillingFlowParams
-              .newBuilder()
+            BillingFlowParams billingFlowParams = BillingFlowParams.newBuilder()
               .setProductDetailsParamsList(productDetailsParamsList)
               .build();
             // Launch the billing flow
@@ -349,19 +347,19 @@ public class NativePurchasesPlugin extends Plugin {
   }
 
   private void processUnfinishedPurchases() {
-    QueryPurchasesParams queryInAppPurchasesParams = QueryPurchasesParams
-      .newBuilder()
-      .setProductType(BillingClient.ProductType.INAPP)
-      .build();
+    QueryPurchasesParams queryInAppPurchasesParams =
+      QueryPurchasesParams.newBuilder()
+        .setProductType(BillingClient.ProductType.INAPP)
+        .build();
     billingClient.queryPurchasesAsync(
       queryInAppPurchasesParams,
       this::handlePurchases
     );
 
-    QueryPurchasesParams querySubscriptionsParams = QueryPurchasesParams
-      .newBuilder()
-      .setProductType(BillingClient.ProductType.SUBS)
-      .build();
+    QueryPurchasesParams querySubscriptionsParams =
+      QueryPurchasesParams.newBuilder()
+        .setProductType(BillingClient.ProductType.SUBS)
+        .build();
     billingClient.queryPurchasesAsync(
       querySubscriptionsParams,
       this::handlePurchases
@@ -378,8 +376,7 @@ public class NativePurchasesPlugin extends Plugin {
       for (Purchase purchase : purchases) {
         if (purchase.getPurchaseState() == Purchase.PurchaseState.PURCHASED) {
           if (purchase.isAcknowledged()) {
-            ConsumeParams consumeParams = ConsumeParams
-              .newBuilder()
+            ConsumeParams consumeParams = ConsumeParams.newBuilder()
               .setPurchaseToken(purchase.getPurchaseToken())
               .build();
             billingClient.consumeAsync(consumeParams, this::onConsumeResponse);
@@ -429,8 +426,7 @@ public class NativePurchasesPlugin extends Plugin {
     List<QueryProductDetailsParams.Product> productList = new ArrayList<>();
     for (String productIdentifier : productIdentifiers) {
       productList.add(
-        QueryProductDetailsParams.Product
-          .newBuilder()
+        QueryProductDetailsParams.Product.newBuilder()
           .setProductId(productIdentifier)
           .setProductType(
             productType.equals("inapp")
@@ -440,8 +436,7 @@ public class NativePurchasesPlugin extends Plugin {
           .build()
       );
     }
-    QueryProductDetailsParams params = QueryProductDetailsParams
-      .newBuilder()
+    QueryProductDetailsParams params = QueryProductDetailsParams.newBuilder()
       .setProductList(productList)
       .build();
     this.initBillingClient(call);
@@ -485,9 +480,8 @@ public class NativePurchasesPlugin extends Plugin {
                     .getPriceCurrencyCode()
                 );
               } else {
-                ProductDetails.SubscriptionOfferDetails selectedOfferDetails = productDetails
-                  .getSubscriptionOfferDetails()
-                  .get(0);
+                ProductDetails.SubscriptionOfferDetails selectedOfferDetails =
+                  productDetails.getSubscriptionOfferDetails().get(0);
                 product.put("planIdentifier", productDetails.getProductId());
                 product.put("identifier", selectedOfferDetails.getBasePlanId());
                 product.put(

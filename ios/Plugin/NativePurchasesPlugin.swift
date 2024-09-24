@@ -131,7 +131,7 @@ public class NativePurchasesPlugin: CAPPlugin {
                 call.reject("productIdentifier is empty")
                 return
             }
-            
+
             DispatchQueue.global().async {
                 Task {
                     do {

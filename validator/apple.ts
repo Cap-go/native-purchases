@@ -12,7 +12,7 @@ interface VerifyResponse {
 
 export async function validateAppleReceipt(
   receipt: string,
-  env: Env
+  env: Env,
 ): Promise<VerifyResponse> {
   const { APPLE_SECRET } = env;
 
@@ -28,7 +28,7 @@ export async function validateAppleReceipt(
         password: APPLE_SECRET,
         "exclude-old-transactions": true,
       }),
-    }
+    },
   );
 
   const data: VerifyResponse = await response.json();

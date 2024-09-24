@@ -6,7 +6,7 @@ const NativePurchases = registerPlugin<NativePurchasesPlugin>(
   "NativePurchases",
   {
     web: () => import("./web").then((m) => new m.NativePurchasesWeb()),
-  }
+  },
 );
 
 export * from "./definitions";
