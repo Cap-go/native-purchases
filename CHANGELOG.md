@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.0.2](https://github.com/Cap-go/native-purchases/compare/6.0.1...6.0.2) (2024-09-24)
+
+
+### Bug Fixes
+
+* update dep and fix lint ([d3a155d](https://github.com/Cap-go/native-purchases/commit/d3a155d55d9c597768381912c101d94bfbc7aee7))
+
 ### [6.0.1](https://github.com/Cap-go/native-purchases/compare/0.0.72...6.0.1) (2024-09-24)
 
 
