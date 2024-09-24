@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.0.1](https://github.com/Cap-go/native-purchases/compare/0.0.72...6.0.1) (2024-09-24)
+
+
+### Bug Fixes
+
+* migrate to capacitor 6 ([96c8f9b](https://github.com/Cap-go/native-purchases/commit/96c8f9b14cf5ba19ca948d3f7c62a2036b8bd0f4))
+* pnpm version ([ca86242](https://github.com/Cap-go/native-purchases/commit/ca862424283e5ce81a691e043a46239773861a13))
+* update pnpm lock ([f48d746](https://github.com/Cap-go/native-purchases/commit/f48d746f7db41db654bbb74d2ec7f1b507c909ca))
+
 ### [0.0.72](https://github.com/Cap-go/native-purchases/compare/0.0.71...0.0.72) (2024-09-18)
 
 
