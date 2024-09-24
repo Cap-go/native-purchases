@@ -24,8 +24,8 @@ importers:
         specifier: ^0.4.0
         version: 0.4.0(eslint@8.57.1)(typescript@4.9.5)
       '@ionic/prettier-config':
-        specifier: ^1.0.1
-        version: 1.0.1(prettier@2.8.8)
+        specifier: ^4.0.0
+        version: 4.0.0(prettier@2.8.8)
       '@ionic/swiftlint-config':
         specifier: ^1.1.2
         version: 1.1.2
@@ -123,10 +123,10 @@ packages:
     peerDependencies:
       eslint: '>=7'
 
-  '@ionic/prettier-config@1.0.1':
-    resolution: {integrity: sha512-/v8UOW7rxkw/hvrRe/QfjlQsdjkm3sfAHoE3uqffO5BoNGijQMARrT32JT9Ei0g6KySXPyxxW+7LzPHrQmfzCw==}
+  '@ionic/prettier-config@4.0.0':
+    resolution: {integrity: sha512-0DqL6CggVdgeJAWOLPUT73rF1VD5p0tVlCpC5GXz5vTIUBxNwsJ5085Q7wXjKiE5Odx3aOHGTcuRWCawFsLFag==}
     peerDependencies:
-      prettier: ^2.0.0
+      prettier: ^2.4.0 || ^3.0.0
 
   '@ionic/swiftlint-config@1.1.2':
     resolution: {integrity: sha512-UbE1AIlTowt9uR7fMzRtbQX4URcyuok7mcpdJfFDHAIGM6nDjohYMke+6xOr6ZYlLnEyVmBGNEg0+grEYRgcVg==}
@@ -1238,7 +1238,7 @@ snapshots:
       - supports-color
       - typescript
 
-  '@ionic/prettier-config@1.0.1(prettier@2.8.8)':
+  '@ionic/prettier-config@4.0.0(prettier@2.8.8)':
     dependencies:
       prettier: 2.8.8
 
