@@ -1,6 +1,6 @@
 {
   "name": "@capgo/native-purchases",
-  "version": "6.0.7",
+  "version": "6.0.8",
   "description": "In-app Subscriptions Made Easy",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",

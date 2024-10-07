@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [6.0.8](https://github.com/Cap-go/native-purchases/compare/6.0.7...6.0.8) (2024-10-07)
+
 ### [6.0.7](https://github.com/Cap-go/native-purchases/compare/6.0.6...6.0.7) (2024-09-30)
 
 ### [6.0.6](https://github.com/Cap-go/native-purchases/compare/6.0.5...6.0.6) (2024-09-30)
