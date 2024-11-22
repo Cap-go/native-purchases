@@ -256,7 +256,10 @@ public class NativePurchasesPlugin extends Plugin {
       call.reject("productType is empty");
       return;
     }
-    if (productType.equals("subs") && (planIdentifier == null || planIdentifier.isEmpty())) {
+    if (
+      productType.equals("subs") &&
+      (planIdentifier == null || planIdentifier.isEmpty())
+    ) {
       // Handle error: no planIdentifier with productType subs
       call.reject("planIdentifier cannot be empty if productType is subs");
       return;
