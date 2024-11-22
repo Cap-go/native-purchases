@@ -246,17 +246,17 @@ public class NativePurchasesPlugin extends Plugin {
     Number quantity = call.getInt("quantity", 1);
     // cannot use quantity, because it's done in native modal
     Log.d("CapacitorPurchases", "purchaseProduct: " + productIdentifier);
-    if (productIdentifier.isEmpty()) {
+    if (productIdentifier == null || productIdentifier.isEmpty()) {
       // Handle error: productIdentifier is empty
       call.reject("productIdentifier is empty");
       return;
     }
-    if (productType.isEmpty()) {
+    if (productType == null || productType.isEmpty()) {
       // Handle error: productType is empty
       call.reject("productType is empty");
       return;
     }
-    if (productType.equals("subs") && planIdentifier.isEmpty()) {
+    if (productType.equals("subs") && (planIdentifier == null || planIdentifier.isEmpty())) {
       // Handle error: no planIdentifier with productType subs
       call.reject("planIdentifier cannot be empty if productType is subs");
       return;
