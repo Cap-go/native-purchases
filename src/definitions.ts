@@ -156,59 +156,6 @@ export interface Transaction {
   // readonly purchaseDate: string;
 }
 
-export interface CustomerInfo {
-  /**
-   * Set of active subscription skus
-   */
-  readonly activeSubscriptions: [string];
-  /**
-   * Set of purchased skus, active and inactive
-   */
-  readonly allPurchasedProductIdentifiers: [string];
-  /**
-   * Returns all the non-subscription  a user has made.
-   * The  are ordered by purchase date in ascending order.
-   */
-  readonly nonSubscriptionTransactions: Transaction[];
-  /**
-   * The latest expiration date of all purchased skus
-   */
-  readonly latestExpirationDate: string | null;
-  /**
-   * The date this user was first seen in RevenueCat.
-   */
-  readonly firstSeen: string;
-  /**
-   * The original App User Id recorded for this user.
-   */
-  readonly originalAppUserId: string;
-  /**
-   * Date when this info was requested
-   */
-  readonly requestDate: string;
-  /**
-   * Returns the version number for the version of the application when the
-   * user bought the app. Use this for grandfathering users when migrating
-   * to subscriptions.
-   *
-   * This corresponds to the value of CFBundleVersion (in iOS) in the
-   * Info.plist file when the purchase was originally made. This is always null
-   * in Android
-   */
-  readonly originalApplicationVersion: string | null;
-  /**
-   * Returns the purchase date for the version of the application when the user bought the app.
-   * Use this for grandfathering users when migrating to subscriptions.
-   */
-  readonly originalPurchaseDate: string | null;
-  /**
-   * URL to manage the active subscription of the user. If this user has an active iOS
-   * subscription, this will point to the App Store, if the user has an active Play Store subscription
-   * it will point there. If there are no active subscriptions it will be null.
-   * If there are multiple for different platforms, it will point to the device store.
-   */
-  readonly managementURL: string | null;
-}
 export interface SubscriptionPeriod {
   /**
    * The Subscription Period number of unit.
@@ -312,7 +259,7 @@ export interface NativePurchasesPlugin {
   /**
    * Restores a user's previous  and links their appUserIDs to any user's also using those .
    */
-  restorePurchases(): Promise<{ customerInfo: CustomerInfo }>;
+  restorePurchases(): Promise<void>;
 
   /**
    * Started purchase process for the given product.
