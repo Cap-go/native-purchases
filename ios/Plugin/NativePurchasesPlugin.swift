@@ -8,6 +8,16 @@ import StoreKit
  */
 @objc(NativePurchasesPlugin)
 public class NativePurchasesPlugin: CAPPlugin {
+    public let identifier = "NativePurchasesPlugin"
+    public let jsName = "NativePurchases"
+    public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "isBillingSupported", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "purchaseProduct", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "restorePurchases", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getProducts", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getProduct", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getPluginVersion", returnType: CAPPluginReturnPromise),
+    ]
 
     private let PLUGIN_VERSION = "0.0.25"
 
