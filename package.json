@@ -13,7 +13,7 @@
     "ios/Plugin/",
     "CapgoNativePurchases.podspec"
   ],
-  "author": "Martin donadieu",
+  "author": "Martin Donadieu <martin@capgo.app>",
   "license": "MIT",
   "repository": {
     "type": "git",
