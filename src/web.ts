@@ -1,9 +1,6 @@
 import { WebPlugin } from "@capacitor/core";
 
-import type {
-  NativePurchasesPlugin,
-  Product,
-} from "./definitions";
+import type { NativePurchasesPlugin, Product } from "./definitions";
 
 export class NativePurchasesWeb
   extends WebPlugin
