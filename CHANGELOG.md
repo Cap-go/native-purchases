@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [7.1.2](https://github.com/Cap-go/native-purchases/compare/7.1.1...7.1.2) (2025-02-08)
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.android.billingclient:billing to v7 ([719f250](https://github.com/Cap-go/native-purchases/commit/719f25019dcb5c6939026c5781d5124758ca47f0))
+* remove pnpm ([f4854ac](https://github.com/Cap-go/native-purchases/commit/f4854acd3f7c4f50eb6e7d480bc0f4a13bbc909f))
+
 ### [7.1.1](https://github.com/Cap-go/native-purchases/compare/7.1.0...7.1.1) (2025-02-08)
 
 
