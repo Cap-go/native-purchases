@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [7.1.8](https://github.com/Cap-go/native-purchases/compare/7.1.7...7.1.8) (2025-02-08)
+
+
+### Bug Fixes
+
+* add missing ignore file ([8b6a9b1](https://github.com/Cap-go/native-purchases/commit/8b6a9b1b627c139573cdc88a39c41b99ba94c1e5))
+
 ### [7.1.7](https://github.com/Cap-go/native-purchases/compare/7.1.6...7.1.7) (2025-02-08)
 
 
