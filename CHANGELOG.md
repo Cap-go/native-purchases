@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.1.0](https://github.com/Cap-go/native-purchases/compare/6.0.43...7.1.0) (2025-02-08)
+
+
+### Features
+
+* migrate to capacitor v7 ([b71c503](https://github.com/Cap-go/native-purchases/commit/b71c5037fa0206f591e889e378c7ccc67dabee99))
+
+
+### Bug Fixes
+
+* CI and git template ([78b1c23](https://github.com/Cap-go/native-purchases/commit/78b1c230dc1dc353ac36ce968058cc7b6b6cf29e))
+
 ### [6.0.43](https://github.com/Cap-go/native-purchases/compare/6.0.42...6.0.43) (2025-01-12)
 
 

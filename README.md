@@ -397,12 +397,10 @@ This approach balances immediate user gratification with proper server-side vali
 ### restorePurchases()
 
 ```typescript
-restorePurchases() => Promise<{ customerInfo: CustomerInfo; }>
+restorePurchases() => Promise<void>
 ```
 
 Restores a user's previous  and links their appUserIDs to any user's also using those .
-
-**Returns:** <code>Promise&lt;{ customerInfo: <a href="#customerinfo">CustomerInfo</a>; }&gt;</code>
 
 --------------------
 
@@ -485,22 +483,6 @@ Get the native Capacitor plugin version
 
 
 ### Interfaces
-
-
-#### CustomerInfo
-
-| Prop                                 | Type                        | Description                                                                                                                                                                                                                                                                                                                                      |
-| ------------------------------------ | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **`activeSubscriptions`**            | <code>[string]</code>       | Set of active subscription skus                                                                                                                                                                                                                                                                                                                  |
-| **`allPurchasedProductIdentifiers`** | <code>[string]</code>       | Set of purchased skus, active and inactive                                                                                                                                                                                                                                                                                                       |
-| **`nonSubscriptionTransactions`**    | <code>Transaction[]</code>  | Returns all the non-subscription a user has made. The are ordered by purchase date in ascending order.                                                                                                                                                                                                                                           |
-| **`latestExpirationDate`**           | <code>string \| null</code> | The latest expiration date of all purchased skus                                                                                                                                                                                                                                                                                                 |
-| **`firstSeen`**                      | <code>string</code>         | The date this user was first seen in RevenueCat.                                                                                                                                                                                                                                                                                                 |
-| **`originalAppUserId`**              | <code>string</code>         | The original App User Id recorded for this user.                                                                                                                                                                                                                                                                                                 |
-| **`requestDate`**                    | <code>string</code>         | Date when this info was requested                                                                                                                                                                                                                                                                                                                |
-| **`originalApplicationVersion`**     | <code>string \| null</code> | Returns the version number for the version of the application when the user bought the app. Use this for grandfathering users when migrating to subscriptions. This corresponds to the value of CFBundleVersion (in iOS) in the Info.plist file when the purchase was originally made. This is always null in Android                            |
-| **`originalPurchaseDate`**           | <code>string \| null</code> | Returns the purchase date for the version of the application when the user bought the app. Use this for grandfathering users when migrating to subscriptions.                                                                                                                                                                                    |
-| **`managementURL`**                  | <code>string \| null</code> | URL to manage the active subscription of the user. If this user has an active iOS subscription, this will point to the App Store, if the user has an active Play Store subscription it will point there. If there are no active subscriptions it will be null. If there are multiple for different platforms, it will point to the device store. |
 
 
 #### Transaction
