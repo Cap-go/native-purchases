@@ -38,7 +38,8 @@ public class NativePurchasesPlugin extends Plugin {
   private static final Phaser semaphoreReady = new Phaser(1);
   private BillingClient billingClient;
 
-  private void isBillingSupported(PluginCall call) {
+  @PluginMethod
+  public void isBillingSupported(PluginCall call) {
     JSObject ret = new JSObject();
     ret.put("isBillingSupported", true);
     call.resolve();
