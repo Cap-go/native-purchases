@@ -7,7 +7,7 @@ import StoreKit
  * here: https://capacitorjs.com/docs/plugins/ios
  */
 @objc(NativePurchasesPlugin)
-public class NativePurchasesPlugin: CAPPlugin {
+public class NativePurchasesPlugin: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "NativePurchasesPlugin"
     public let jsName = "NativePurchases"
     public let pluginMethods: [CAPPluginMethod] = [
