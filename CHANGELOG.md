@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [7.1.9](https://github.com/Cap-go/native-purchases/compare/7.1.8...7.1.9) (2025-02-08)
+
+
+### Bug Fixes
+
+* author ([9206909](https://github.com/Cap-go/native-purchases/commit/92069093df8a166973fd148627a7a00a59ac5ac5))
+
 ### [7.1.8](https://github.com/Cap-go/native-purchases/compare/7.1.7...7.1.8) (2025-02-08)
 
 
