@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [7.1.12](https://github.com/Cap-go/native-purchases/compare/7.1.11...7.1.12) (2025-02-10)
+
+
+### Bug Fixes
+
+* **deps:** update dependency com.google.guava:guava to v33.4.0-jre ([#83](https://github.com/Cap-go/native-purchases/issues/83)) ([d5543a8](https://github.com/Cap-go/native-purchases/commit/d5543a8a9fbb9d2dc5c31b683de7f19d114b9189))
+
 ### [7.1.11](https://github.com/Cap-go/native-purchases/compare/7.1.10...7.1.11) (2025-02-09)
 
 
